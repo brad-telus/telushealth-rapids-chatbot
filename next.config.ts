@@ -3,9 +3,6 @@ import type {NextConfig} from "next";
 const isProduction = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
-    experimental: {
-        ppr: true,
-    },
     output: 'standalone',
     basePath: isProduction ? '/rx' : '',
     trailingSlash: isProduction,
