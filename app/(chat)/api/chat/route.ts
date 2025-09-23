@@ -21,7 +21,7 @@ import type { VisibilityType } from "@/components/visibility-selector";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
 import type { ChatModel } from "@/lib/ai/models";
 import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
-import { myProvider } from "@/lib/ai/providers";
+import { createProvider } from "@/lib/ai/providers";
 import { createDocument } from "@/lib/ai/tools/create-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
@@ -175,7 +175,10 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
-        const modelInstance = myProvider.languageModel(selectedChatModel);
+        // Get cookies from request and create provider with cookie context
+        const cookieHeader = request.headers.get('cookie');
+        const provider = createProvider(cookieHeader || undefined);
+        const modelInstance = provider.languageModel(selectedChatModel);
         const streamTextConfig = {
           model: modelInstance,
           system: systemPrompt({ selectedChatModel, requestHints }),
@@ -194,7 +197,7 @@ export async function POST(request: Request) {
             try {
               const providers = await getTokenlensCatalog();
               const modelId =
-                myProvider.languageModel(selectedChatModel).modelId;
+                provider.languageModel(selectedChatModel).modelId;
               if (!modelId) {
                 finalMergedUsage = usage;
                 dataStream.write({
