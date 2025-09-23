@@ -39,5 +39,20 @@ gcloud beta run services update "$1" \
   --region=northamerica-northeast1 \
   --tag="${TAG_FORMATTED}"
 
+# Run database migration before routing traffic
+echo "Running database migration..."
+gcloud run jobs create chatbot-db-migration-temp \
+  --image="${IMAGE_NAME}" \
+  --args="pnpm,run,db:migrate" \
+  --add-cloudsql-instances=th-rapids-nonprod-2294:northamerica-northeast1:rpds-chat-rx-test \
+  --vpc-connector=kong-vpc-connector-${LOAD_BALANCER_VERSION} \
+  --set-env-vars="POSTGRES_URL=${POSTGRES_URL}" \
+  --region=northamerica-northeast1 \
+  --replace
+
+gcloud run jobs execute chatbot-db-migration-temp \
+  --region=northamerica-northeast1 \
+  --wait
+
 # Route traffic to the latest version
 gcloud run services update-traffic $1 --to-latest --region=northamerica-northeast1

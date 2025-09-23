@@ -28,10 +28,6 @@ ENV NODE_ENV=production
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Install pnpm and dependencies
-RUN npm install -g pnpm@9.12.3 && \
-    pnpm install --frozen-lockfile --prod
-
 # Copy public files
 COPY public ./public
 

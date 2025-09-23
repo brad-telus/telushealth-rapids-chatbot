@@ -17,4 +17,6 @@ const nextConfig: NextConfig = {
     },
 };
 
+console.log("Next.js config:", nextConfig);
+
 export default nextConfig;
