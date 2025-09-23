@@ -8,10 +8,11 @@ else
     echo "Warning: Lacework datacollector not found"
 fi
 
+cd /app
+
 echo "Running migrations..."
 pnpm run db:migrate
 
 # Start the Next.js application
 echo "Starting chatbot application on port ${PORT:-8081}..."
-cd /app
 exec node server.js
