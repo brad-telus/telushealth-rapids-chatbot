@@ -2,9 +2,12 @@ import {
   generateId,
   IdGenerator,
   withoutTrailingSlash,
-} from '@ai-sdk/provider-utils';
-import { ProviderV2 } from '@ai-sdk/provider';
-import { A2aChatLanguageModel, A2aChatSettings } from './a2a-chat-language-model';
+} from "@ai-sdk/provider-utils";
+import { ProviderV2 } from "@ai-sdk/provider";
+import {
+  A2aChatLanguageModel,
+  A2aChatSettings,
+} from "./a2a-chat-language-model";
 
 // Define your provider interface extending ProviderV2
 interface A2aProvider extends ProviderV2 {
@@ -13,7 +16,7 @@ interface A2aProvider extends ProviderV2 {
   // Add specific methods for different model types
   languageModel(
     modelId: string,
-    settings?: A2aChatSettings,
+    settings?: A2aChatSettings
   ): A2aChatLanguageModel;
 }
 
@@ -31,20 +34,21 @@ interface A2aProviderSettings {
 
 // Factory function to create provider instance
 function createA2a(options: A2aProviderSettings = {}): A2aProvider {
-  const createChatModel = (
-    modelId: string,
-    settings: A2aChatSettings = {},
-  ) =>
-    new A2aChatLanguageModel(withoutTrailingSlash(modelId) as string, settings, {
-      provider: 'a2a',
-      generateId: options.generateId ?? generateId,
-      fetchImpl: options.fetchImpl,
-    });
+  const createChatModel = (modelId: string, settings: A2aChatSettings = {}) =>
+    new A2aChatLanguageModel(
+      withoutTrailingSlash(modelId) as string,
+      settings,
+      {
+        provider: "a2a",
+        generateId: options.generateId ?? generateId,
+        fetchImpl: options.fetchImpl,
+      }
+    );
 
   const provider = function (modelId: string, settings?: A2aChatSettings) {
     if (new.target) {
       throw new Error(
-        'The model factory function cannot be called with the new keyword.',
+        "The model factory function cannot be called with the new keyword."
       );
     }
 
@@ -58,4 +62,4 @@ function createA2a(options: A2aProviderSettings = {}): A2aProvider {
 
 const a2a = createA2a();
 
-export {a2a, createA2a}
+export { a2a, createA2a };
