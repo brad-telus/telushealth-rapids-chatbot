@@ -13,5 +13,5 @@ export type Session = {
   expires: string;
 };
 
-// Export the SessionData type from session.ts for convenience
-export { type SessionData } from "./session";
+// Export the SessionData type from session-types.ts for convenience
+export { type SessionData } from "./session-types";

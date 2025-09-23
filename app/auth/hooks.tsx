@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { SessionData } from "./session";
+import { SessionData } from "./session-types";
 
 // Define the authentication context type
 type AuthContextType = {

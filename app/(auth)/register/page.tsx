@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { getLoginUrl } from "@/app/auth/session";
+import { getLoginUrl } from "@/app/auth/session-types";
 
 // This file has been updated as part of the migration from NextAuth to ForgeRock
 // Registration is now handled by ForgeRock, so we redirect to the login page

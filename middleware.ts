@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { isDevelopmentEnvironment } from "./lib/constants";
+import { isDevelopmentEnvironment, isForgeRockAuthEnabled } from "./lib/constants";
 import { createBasepathUrl } from "./lib/utils";
+import { getDefaultSession } from "./app/auth/session-types";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,6 +21,32 @@ export async function middleware(request: NextRequest) {
 
   // Allow access to login and register pages
   if (pathname === "/login" || pathname === "/register") {
+    return NextResponse.next();
+  }
+
+  // If ForgeRock auth is disabled, set a default session
+  if (!isForgeRockAuthEnabled) {
+    // Check if the user already has a session
+    const sessionCookie = request.cookies.get("forgerock_session");
+    const isAuthenticated = !!sessionCookie?.value;
+
+    // If the user doesn't have a session, create a default one
+    if (!isAuthenticated) {
+      const defaultSession = getDefaultSession();
+      const response = NextResponse.next();
+
+      // Set the session cookie
+      response.cookies.set("forgerock_session", JSON.stringify(defaultSession), {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: Math.floor((defaultSession.expiresAt - Date.now()) / 1000) - 300,
+        sameSite: "lax",
+      });
+
+      return response;
+    }
+
     return NextResponse.next();
   }
 

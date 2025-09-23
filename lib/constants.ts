@@ -8,4 +8,7 @@ export const isTestEnvironment = Boolean(
     process.env.CI_PLAYWRIGHT
 );
 
+// Feature flag for ForgeRock authentication
+export const isForgeRockAuthEnabled = process.env.ENABLE_FORGEROCK_AUTH !== "false";
+
 export const DUMMY_PASSWORD = generateDummyPassword();

@@ -1,21 +1,5 @@
 import { cookies } from "next/headers";
-import { createBasepathPath } from "@/lib/utils";
-
-// Session cookie name
-const SESSION_COOKIE_NAME = "forgerock_session";
-
-// Session data type
-export type SessionData = {
-  user: {
-    id: string;
-    email?: string;
-    name?: string;
-  };
-  accessToken: string;
-  idToken: string;
-  refreshToken?: string;
-  expiresAt: number;
-};
+import { SESSION_COOKIE_NAME, type SessionData, getDefaultSession } from "./session-types";
 
 // Get session from cookie
 export const getSession = async (): Promise<SessionData | null> => {
@@ -68,13 +52,5 @@ export const isSessionValid = async (): Promise<boolean> => {
   return session.expiresAt > Date.now() + 5 * 60 * 1000;
 };
 
-// Get login URL
-export const getLoginUrl = (callbackUrl?: string): string => {
-  const baseUrl = createBasepathPath("/api/auth/signin");
-  return callbackUrl ? `${baseUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}` : baseUrl;
-};
-
-// Get logout URL
-export const getLogoutUrl = (): string => {
-  return createBasepathPath("/api/auth/signout");
-};
+// Re-export getLoginUrl and getLogoutUrl from session-types
+export { getLoginUrl, getLogoutUrl } from "./session-types";
