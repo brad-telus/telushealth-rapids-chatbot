@@ -8,9 +8,6 @@ const nextConfig: NextConfig = {
     trailingSlash: isProduction,
     images: {
         unoptimized: true, // the Next image optimization API is not secure
-        remotePatterns: [{
-            hostname: "avatar.vercel.sh",
-        }],
     },
 };
 
