@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
         unoptimized: true, // the Next image optimization API is not secure
         remotePatterns: [{
             hostname: "main.rapidspoc.com",
+            pathname: "/**",
         }],
     },
 };

@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { guestRegex, isDevelopmentEnvironment } from "./lib/constants";
-import { createBasepathUrl, getBasePath } from "./lib/utils";
+import { createBasepathUrl } from "./lib/utils";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,15 +14,7 @@ export async function middleware(request: NextRequest) {
     return new Response("pong", { status: 200 });
   }
 
-  // Handle NextAuth.js paths - both with and without basePath
   if (pathname.startsWith("/api/auth")) {
-    // If we get a NextAuth callback without basePath, redirect to the correct basePath URL
-    const basePath = getBasePath();
-    if (basePath && !pathname.startsWith(`${basePath}/api/auth`)) {
-      const newUrl = new URL(request.url);
-      newUrl.pathname = `${basePath}${pathname}`;
-      return NextResponse.redirect(newUrl);
-    }
     return NextResponse.next();
   }
 

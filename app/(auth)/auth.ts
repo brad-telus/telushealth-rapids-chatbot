@@ -91,23 +91,5 @@ export const {
 
       return session;
     },
-    redirect({ url, baseUrl }) {
-      // Import basePath within the callback to avoid module loading issues
-      const { basePath } = require("../../next.config");
-
-      // Ensure redirects respect the basePath
-      if (url.startsWith("/")) {
-        return `${baseUrl}${basePath}${url}`;
-      }
-      // Allow relative redirects to the same origin with basePath
-      if (url.startsWith(baseUrl)) {
-        const urlObj = new URL(url);
-        if (!urlObj.pathname.startsWith(basePath)) {
-          urlObj.pathname = `${basePath}${urlObj.pathname}`;
-          return urlObj.toString();
-        }
-      }
-      return url;
-    },
   },
 });

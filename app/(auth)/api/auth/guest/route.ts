@@ -6,7 +6,7 @@ import { createBasepathUrl } from "@/lib/utils";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const redirectUrl = searchParams.get("redirectUrl") || createBasepathUrl("/", request.url);
+  const redirectUrl = searchParams.get("redirectUrl");
 
   const token = await getToken({
     req: request,
@@ -15,8 +15,20 @@ export async function GET(request: Request) {
   });
 
   if (token) {
-    return NextResponse.redirect(new URL(createBasepathUrl("/", request.url)));
+    // If user is already authenticated, redirect to the requested URL or home
+    const targetUrl = redirectUrl || createBasepathUrl("/", request.url);
+    return NextResponse.redirect(new URL(targetUrl));
   }
 
-  return signIn("guest", { redirect: true, redirectTo: redirectUrl });
+  // For guest sign-in, use NextAuth.js without automatic redirect
+  // Then manually redirect to avoid basePath issues
+  try {
+    await signIn("guest", { redirect: false });
+    const targetUrl = redirectUrl || createBasepathUrl("/", request.url);
+    return NextResponse.redirect(new URL(targetUrl));
+  } catch (error) {
+    console.error("Guest sign-in error:", error);
+    // Fallback to home page
+    return NextResponse.redirect(new URL(createBasepathUrl("/", request.url)));
+  }
 }
