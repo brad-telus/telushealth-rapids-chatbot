@@ -36,7 +36,7 @@ RUN npm install -g pnpm@9.12.3 && \
 COPY . .
 
 # Build the application
-RUN pnpm build
+RUN pnpm next:build
 
 # Copy public files
 COPY public ./public

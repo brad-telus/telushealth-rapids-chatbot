@@ -12,6 +12,8 @@ echo "INTERNAL_SERVICES_URL: ${INTERNAL_SERVICES_URL}"
 TAG_FORMATTED=$(echo "${RAPIDS_VERTICAL_NAME/./"-"}")
 TAG_FORMATTED=$(echo "${TAG_FORMATTED/./"-"}")
 
+POSTGRES_URL="postgresql://testuser:245325!Ad342432@127.0.0.1:5432"
+
 echo "Deploying '$1' image ${IMAGE_NAME}, under tag ${TAG_FORMATTED}"
 gcloud run deploy "$1" \
         --image="${IMAGE_NAME}" \
@@ -23,9 +25,10 @@ gcloud run deploy "$1" \
         --no-cpu-throttling \
         --region=northamerica-northeast1 \
         --no-allow-unauthenticated \
+        --add-cloudsql-instances=th-rapids-nonprod-2294:northamerica-northeast1:rpds-chat-rx-test \
         --service-account="rapids-api-cloud-run-sa@${RAPIDS_PROJECT_ID}.iam.gserviceaccount.com" \
-        --set-env-vars "RAPIDS_PROJECT_ID=${RAPIDS_PROJECT_ID},LW_CLOUDRUN_ENV_GEN=gen1,RAPIDS_VERTICAL_NAME=${RAPIDS_VERTICAL_NAME},FULLY_QUALIFIED_DOMAIN=${FULLY_QUALIFIED_DOMAIN},NODE_ENV=production,AUTH_SECRET=123456789" \
-        --set-secrets=LaceworkAccessToken=LaceworkAccessToken:latest,LaceworkServerUrl=LaceworkServerUrl:latest,POSTGRES_URL=ChatPostgresConnectionString:latest \
+        --set-env-vars "RAPIDS_PROJECT_ID=${RAPIDS_PROJECT_ID},LW_CLOUDRUN_ENV_GEN=gen1,RAPIDS_VERTICAL_NAME=${RAPIDS_VERTICAL_NAME},FULLY_QUALIFIED_DOMAIN=${FULLY_QUALIFIED_DOMAIN},NODE_ENV=production,AUTH_SECRET=123456789,POSTGRES_URL=${POSTGRES_URL}" \
+        --set-secrets=LaceworkAccessToken=LaceworkAccessToken:latest,LaceworkServerUrl=LaceworkServerUrl:latest \
         --vpc-connector=kong-vpc-connector-${LOAD_BALANCER_VERSION} \
         --ingress=internal \
         --tag="${TAG_FORMATTED}"

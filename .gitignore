@@ -41,3 +41,13 @@ yarn-error.log*
 /playwright-report/
 /blob-report/
 /playwright/*
+/tsconfig.tsbuildinfo
+/.claude/settings.local.json
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/.gitignore
+/.idea/dataSources.xml
+/.idea/google-java-format.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/telushealth-rapids-chatbot.iml
+/.idea/vcs.xml

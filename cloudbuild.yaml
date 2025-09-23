@@ -27,7 +27,7 @@ steps:
 
   - id: 'Build Chatbot service'
     name: ${_BUILD_NAME}
-    args: [ pnpm, build ]
+    args: [ pnpm, next:build ]
     env:
       - RAPIDS_PROJECT_ID=${_RAPIDS_PROJECT_ID}
       - NODE_ENV=production
