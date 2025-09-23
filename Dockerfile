@@ -32,17 +32,9 @@ COPY package.json pnpm-lock.yaml ./
 RUN npm install -g pnpm@9.12.3 && \
     pnpm install --frozen-lockfile --prod
 
-# Copy application files
-COPY . .
-
-# Build the application
-RUN pnpm next:build
-
 # Copy public files
 COPY public ./public
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY .next/standalone ./
 COPY .next/standalone ./.next/standalone
 COPY .next/static ./.next/static
