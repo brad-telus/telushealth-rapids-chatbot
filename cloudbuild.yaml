@@ -68,7 +68,6 @@ steps:
     waitFor:
       - 'Build chatbot image'
       - 'Run Unit Tests'
-      - 'Run Linting'
 
 logsBucket: "gs://${_COMMON_PROJECT_ID}-build-reports/build-logs/telushealth-rapids-chatbot"
 options:
