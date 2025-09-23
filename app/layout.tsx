@@ -80,7 +80,9 @@ export default function RootLayout({
           enableSystem
         >
           <Toaster position="top-center" />
-          <SessionProvider basePath={createBasepathPath("/api/auth")}>{children}</SessionProvider>
+          <SessionProvider basePath={createBasepathPath("/api/auth")}>
+            {children}
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

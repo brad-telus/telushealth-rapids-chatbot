@@ -1,12 +1,12 @@
+import type { ProviderV2 } from "@ai-sdk/provider";
 import {
   generateId,
-  IdGenerator,
+  type IdGenerator,
   withoutTrailingSlash,
 } from "@ai-sdk/provider-utils";
-import { ProviderV2 } from "@ai-sdk/provider";
 import {
   A2aChatLanguageModel,
-  A2aChatSettings,
+  type A2aChatSettings,
 } from "./a2a-chat-language-model";
 
 // Define your provider interface extending ProviderV2

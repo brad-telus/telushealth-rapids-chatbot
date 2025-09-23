@@ -29,7 +29,7 @@ export function createProvider(cookieHeader?: string) {
   const fetchWithCookies = cookieHeader
     ? (url: RequestInfo | URL, init?: RequestInit) => {
         const headers = new Headers(init?.headers);
-        headers.set('Cookie', cookieHeader);
+        headers.set("Cookie", cookieHeader);
         return fetch(url, {
           ...init,
           headers,

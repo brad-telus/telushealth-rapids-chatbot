@@ -1,31 +1,31 @@
-import {
+import type {
   Message,
   MessageSendParams,
+  Part,
   SendMessageResponse,
   SendMessageSuccessResponse,
   Task,
   TaskArtifactUpdateEvent,
   TaskStatusUpdateEvent,
   TextPart,
-  Part,
 } from "@a2a-js/sdk";
 import { A2AClient } from "@a2a-js/sdk/client";
 
 import {
-  LanguageModelV2,
-  LanguageModelV2CallOptions,
-  LanguageModelV2Prompt,
-  LanguageModelV2Content,
-  LanguageModelV2CallWarning,
-  LanguageModelV2StreamPart,
+  type LanguageModelV2,
+  type LanguageModelV2CallOptions,
+  type LanguageModelV2CallWarning,
+  type LanguageModelV2Content,
+  type LanguageModelV2FinishReason,
+  type LanguageModelV2Prompt,
+  type LanguageModelV2StreamPart,
+  type LanguageModelV2TextPart,
   UnsupportedFunctionalityError,
-  LanguageModelV2FinishReason,
-  LanguageModelV2TextPart,
 } from "@ai-sdk/provider";
 import {
   convertAsyncIteratorToReadableStream,
   generateId,
-  IdGenerator,
+  type IdGenerator,
 } from "@ai-sdk/provider-utils";
 
 type A2AStreamEventData =
@@ -437,16 +437,18 @@ class A2aChatLanguageModel implements LanguageModelV2 {
                     true
                   );
                 }
-                if (event.kind === "task" && event.artifacts) {
-                  if (event.artifacts) {
-                    for (const artifact of event.artifacts) {
-                      enqueueParts(
-                        controller,
-                        artifact.parts,
-                        artifact.artifactId,
-                        true
-                      );
-                    }
+                if (
+                  event.kind === "task" &&
+                  event.artifacts &&
+                  event.artifacts
+                ) {
+                  for (const artifact of event.artifacts) {
+                    enqueueParts(
+                      controller,
+                      artifact.parts,
+                      artifact.artifactId,
+                      true
+                    );
                   }
                 }
 

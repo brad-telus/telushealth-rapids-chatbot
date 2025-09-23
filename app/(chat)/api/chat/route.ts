@@ -176,7 +176,7 @@ export async function POST(request: Request) {
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
         // Get cookies from request and create provider with cookie context
-        const cookieHeader = request.headers.get('cookie');
+        const cookieHeader = request.headers.get("cookie");
         const provider = createProvider(cookieHeader || undefined);
         const modelInstance = provider.languageModel(selectedChatModel);
         const streamTextConfig = {
@@ -196,8 +196,7 @@ export async function POST(request: Request) {
           onFinish: async ({ usage }) => {
             try {
               const providers = await getTokenlensCatalog();
-              const modelId =
-                provider.languageModel(selectedChatModel).modelId;
+              const modelId = provider.languageModel(selectedChatModel).modelId;
               if (!modelId) {
                 finalMergedUsage = usage;
                 dataStream.write({

@@ -1,12 +1,9 @@
-import { compare } from "bcrypt-ts";
 import NextAuth, { type DefaultSession } from "next-auth";
 import type { DefaultJWT } from "next-auth/jwt";
-import Credentials from "next-auth/providers/credentials";
-import { DUMMY_PASSWORD } from "@/lib/constants";
-import { createGuestUser, getUser } from "@/lib/db/queries";
+import type { OIDCConfig } from "next-auth/providers";
 import { authConfig } from "./auth.config";
 
-export type UserType = "guest" | "regular";
+export type UserType = "regular";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -39,40 +36,43 @@ export const {
 } = NextAuth({
   ...authConfig,
   providers: [
-    Credentials({
-      credentials: {},
-      async authorize({ email, password }: any) {
-        const users = await getUser(email);
-
-        if (users.length === 0) {
-          await compare(password, DUMMY_PASSWORD);
-          return null;
-        }
-
-        const [user] = users;
-
-        if (!user.password) {
-          await compare(password, DUMMY_PASSWORD);
-          return null;
-        }
-
-        const passwordsMatch = await compare(password, user.password);
-
-        if (!passwordsMatch) {
-          return null;
-        }
-
-        return { ...user, type: "regular" };
+    {
+      id: "forgerock",
+      name: "ForgeRock",
+      type: "oidc",
+      issuer: process.env.FORGEROCK_ISSUER,
+      clientId: process.env.FORGEROCK_CLIENT_ID,
+      clientSecret: process.env.FORGEROCK_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: "openid profile email",
+          response_type: "code",
+        },
       },
-    }),
-    Credentials({
-      id: "guest",
-      credentials: {},
-      async authorize() {
-        const [guestUser] = await createGuestUser();
-        return { ...guestUser, type: "guest" };
+      token: {
+        params: {
+          grant_type: "authorization_code",
+        },
       },
-    }),
+      userinfo: {
+        async request({ tokens, provider }: { tokens: any; provider: any }) {
+          const response = await fetch(provider.userinfo?.url as string, {
+            headers: {
+              Authorization: `Bearer ${tokens.access_token}`,
+            },
+          });
+          return response.json();
+        },
+      },
+      profile(profile: any) {
+        return {
+          id: profile.sub,
+          email: profile.email,
+          name: profile.name || profile.preferred_username,
+          type: "regular",
+        };
+      },
+    } as OIDCConfig<any>,
   ],
   callbacks: {
     jwt({ token, user }) {

@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { guestRegex, isDevelopmentEnvironment } from "./lib/constants";
+import { isDevelopmentEnvironment } from "./lib/constants";
 import { createBasepathUrl } from "./lib/utils";
 
 export async function middleware(request: NextRequest) {
@@ -30,13 +30,16 @@ export async function middleware(request: NextRequest) {
     const redirectUrl = encodeURIComponent(redirectPath);
 
     return NextResponse.redirect(
-      new URL(createBasepathUrl(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url))
+      new URL(
+        createBasepathUrl(
+          `/api/auth/signin/forgerock?callbackUrl=${redirectUrl}`,
+          request.url
+        )
+      )
     );
   }
 
-  const isGuest = guestRegex.test(token?.email ?? "");
-
-  if (token && !isGuest && ["/login", "/register"].includes(pathname)) {
+  if (token && ["/login", "/register"].includes(pathname)) {
     return NextResponse.redirect(new URL(createBasepathUrl("/", request.url)));
   }
 

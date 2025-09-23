@@ -77,7 +77,7 @@ export class ChatSDKError extends Error {
 
 export function getMessageByErrorCode(errorCode: ErrorCode): string {
   if (errorCode.includes("database")) {
-    return "An error occurred while executing a database query.";
+    return "An error occurred while executing a database query: " + errorCode;
   }
 
   switch (errorCode) {
