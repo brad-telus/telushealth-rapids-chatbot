@@ -62,7 +62,8 @@ steps:
 logsBucket: "gs://${_COMMON_PROJECT_ID}-build-reports/build-logs/telushealth-rapids-chatbot"
 options:
   logging: GCS_ONLY
-  NODE_ENV: 'production'
+  env:
+    - NODE_ENV=production
 timeout: '1200s'
 substitutions:
   _IMAGE_BASE: northamerica-northeast1-docker.pkg.dev/${_COMMON_PROJECT_ID}/docker-builds/
