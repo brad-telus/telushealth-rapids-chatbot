@@ -25,7 +25,9 @@ export async function middleware(request: NextRequest) {
   });
 
   if (!token) {
-    const redirectUrl = encodeURIComponent(request.url);
+    // Use pathname + search to avoid including the host in redirectUrl
+    const redirectPath = `${pathname}${request.nextUrl.search}`;
+    const redirectUrl = encodeURIComponent(redirectPath);
 
     return NextResponse.redirect(
       new URL(createBasepathUrl(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url))

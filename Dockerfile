@@ -44,5 +44,6 @@ RUN chmod +x /run.sh
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED=0
 ENV PORT=8081
+ENV AUTH_TRUST_HOST=true
 
 ENTRYPOINT ["/run.sh"]

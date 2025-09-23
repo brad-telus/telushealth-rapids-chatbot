@@ -16,7 +16,9 @@ export async function GET(request: Request) {
 
   if (token) {
     // If user is already authenticated, redirect to the requested URL or home
-    const targetUrl = redirectUrl || createBasepathUrl("/", request.url);
+    const targetUrl = redirectUrl
+      ? createBasepathUrl(redirectUrl, request.url)
+      : createBasepathUrl("/", request.url);
     return NextResponse.redirect(new URL(targetUrl));
   }
 
@@ -24,7 +26,9 @@ export async function GET(request: Request) {
   // Then manually redirect to avoid basePath issues
   try {
     await signIn("guest", { redirect: false });
-    const targetUrl = redirectUrl || createBasepathUrl("/", request.url);
+    const targetUrl = redirectUrl
+      ? createBasepathUrl(redirectUrl, request.url)
+      : createBasepathUrl("/", request.url);
     return NextResponse.redirect(new URL(targetUrl));
   } catch (error) {
     console.error("Guest sign-in error:", error);
