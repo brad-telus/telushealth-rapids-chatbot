@@ -28,6 +28,15 @@ ENV NODE_ENV=production
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
+# Copy source code needed for migrations
+COPY lib ./lib
+
+# Install minimal dependencies for migrations only
+RUN npm install -g pnpm@latest
+WORKDIR /app/lib/db
+RUN pnpm install --frozen-lockfile
+WORKDIR /app
+
 # Copy public files
 COPY public ./public
 
