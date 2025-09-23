@@ -44,8 +44,12 @@ steps:
 
   - id: 'Run Unit Tests'
     name: ${_BUILD_NAME}
-    entrypoint: pnpm
-    args: [ 'run', 'test' ]
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm install -g pnpm@9.12.3 &&
+        pnpm run test
     env:
       - IS_CI=true
       - SHORT_SHA=${SHORT_SHA}
