@@ -13,7 +13,7 @@ steps:
       - SHORT_SHA=${SHORT_SHA}
 
   - id: 'Install Chatbot dependencies'
-    name: ${_BUILD_NAME}
+    name: gcr.io/cloud-builders/npm
     entrypoint: 'bash'
     args:
       - '-c'
@@ -26,8 +26,13 @@ steps:
       - 'Stamp version'
 
   - id: 'Build Chatbot service'
-    name: ${_BUILD_NAME}
-    args: [ pnpm, next:build ]
+    name: gcr.io/cloud-builders/npm
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm install -g pnpm@9.12.3 &&
+        pnpm next:build
     env:
       - RAPIDS_PROJECT_ID=${_RAPIDS_PROJECT_ID}
       - NODE_ENV=production
@@ -43,7 +48,7 @@ steps:
       - 'Build Chatbot service'
 
   - id: 'Run Unit Tests'
-    name: ${_BUILD_NAME}
+    name: gcr.io/cloud-builders/npm
     entrypoint: 'bash'
     args:
       - '-c'
