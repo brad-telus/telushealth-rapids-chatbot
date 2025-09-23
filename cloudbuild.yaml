@@ -37,8 +37,8 @@ steps:
   - id: 'Build chatbot image'
     name: gcr.io/kaniko-project/executor
     args:
-      - --destination=${_IMAGE_BASE}chatbot:${_RAPIDS_VERTICAL_NAME}
-      - --destination=${_IMAGE_BASE}chatbot:${SHORT_SHA}
+      - --destination=${_IMAGE_BASE}rx:${_RAPIDS_VERTICAL_NAME}
+      - --destination=${_IMAGE_BASE}rx:${SHORT_SHA}
     waitFor:
       - 'Build Chatbot service'
 
