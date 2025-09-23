@@ -34,7 +34,7 @@ COPY lib ./lib
 # Install minimal dependencies for migrations only
 RUN npm install -g pnpm@latest
 WORKDIR /app/lib/db
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 WORKDIR /app
 
 # Copy public files
