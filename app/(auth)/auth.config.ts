@@ -3,6 +3,8 @@ import { basePath } from "../../next.config";
 
 export const authConfig = {
   basePath: "/api/auth",
+  trustHost: true, // Allow NextAuth to work behind proxies and with custom base paths
+  useSecureCookies: process.env.NODE_ENV === "production", // Use secure cookies in production
   pages: {
     signIn: `${basePath}/login`,
     newUser: `${basePath}/`,
