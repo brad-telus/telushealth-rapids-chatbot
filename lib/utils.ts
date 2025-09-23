@@ -114,3 +114,36 @@ export function getTextFromMessage(message: ChatMessage): string {
     .map((part) => part.text)
     .join('');
 }
+
+/**
+ * Utility functions for handling basePath-aware URLs
+ */
+const isProduction = process.env.NODE_ENV === "production";
+const BASE_PATH = isProduction ? '/rx' : '';
+
+/**
+ * Creates a basePath-aware URL for server-side redirects
+ * @param path - The path to append to basePath (should start with /)
+ * @param baseUrl - The base URL (from request.url)
+ * @returns Complete URL with basePath
+ */
+export function createBasepathUrl(path: string, baseUrl: string): string {
+  return new URL(`${BASE_PATH}${path}`, baseUrl).toString();
+}
+
+/**
+ * Creates a basePath-aware path for client-side navigation
+ * @param path - The path to append to basePath (should start with /)
+ * @returns Path with basePath prefix
+ */
+export function createBasepathPath(path: string): string {
+  return `${BASE_PATH}${path}`;
+}
+
+/**
+ * Gets the current basePath
+ * @returns The basePath string
+ */
+export function getBasePath(): string {
+  return BASE_PATH;
+}
