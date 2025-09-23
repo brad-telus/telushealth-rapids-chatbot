@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 import { isDevelopmentEnvironment } from "./lib/constants";
 import { createBasepathUrl } from "./lib/utils";
 
@@ -14,33 +13,31 @@ export async function middleware(request: NextRequest) {
     return new Response("pong", { status: 200 });
   }
 
+  // Allow access to authentication routes
   if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: !isDevelopmentEnvironment,
-  });
+  // Allow access to login and register pages
+  if (pathname === "/login" || pathname === "/register") {
+    return NextResponse.next();
+  }
 
-  if (!token) {
-    // Use pathname + search to avoid including the host in redirectUrl
-    const redirectPath = `${pathname}${request.nextUrl.search}`;
-    const redirectUrl = encodeURIComponent(redirectPath);
+  // Check if the user is authenticated by checking the session cookie
+  const sessionCookie = request.cookies.get("forgerock_session");
+  const isAuthenticated = !!sessionCookie?.value;
 
+  // If the user is not authenticated, redirect to the login page
+  if (!isAuthenticated) {
+    const callbackUrl = encodeURIComponent(request.url);
     return NextResponse.redirect(
       new URL(
         createBasepathUrl(
-          `/api/auth/signin/forgerock?callbackUrl=${redirectUrl}`,
+          `/login?callbackUrl=${callbackUrl}`,
           request.url
         )
       )
     );
-  }
-
-  if (token && ["/login", "/register"].includes(pathname)) {
-    return NextResponse.redirect(new URL(createBasepathUrl("/", request.url)));
   }
 
   return NextResponse.next();
@@ -51,8 +48,6 @@ export const config = {
     "/",
     "/chat/:id",
     "/api/:path*",
-    "/login",
-    "/register",
 
     /*
      * Match all request paths except for the ones starting with:

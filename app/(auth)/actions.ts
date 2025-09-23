@@ -1,84 +1,19 @@
 "use server";
 
-import { z } from "zod";
+import { redirect } from "next/navigation";
+import { getLoginUrl } from "@/app/auth/session";
 
-import { createUser, getUser } from "@/lib/db/queries";
-
-import { signIn } from "./auth";
-
-const authFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-export type LoginActionState = {
-  status: "idle" | "in_progress" | "success" | "failed" | "invalid_data";
+export type ForgeRockAuthState = {
+    status: "idle" | "in_progress" | "success" | "failed";
 };
 
-export const login = async (
-  _: LoginActionState,
-  formData: FormData
-): Promise<LoginActionState> => {
-  try {
-    const validatedData = authFormSchema.parse({
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
+// This file has been updated as part of the migration from NextAuth to ForgeRock
+// The credential-based authentication has been removed, and only ForgeRock authentication is supported
 
-    await signIn("credentials", {
-      email: validatedData.email,
-      password: validatedData.password,
-      redirect: false,
-    });
-
-    return { status: "success" };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { status: "invalid_data" };
-    }
-
-    return { status: "failed" };
-  }
-};
-
-export type RegisterActionState = {
-  status:
-    | "idle"
-    | "in_progress"
-    | "success"
-    | "failed"
-    | "user_exists"
-    | "invalid_data";
-};
-
-export const register = async (
-  _: RegisterActionState,
-  formData: FormData
-): Promise<RegisterActionState> => {
-  try {
-    const validatedData = authFormSchema.parse({
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
-
-    const [user] = await getUser(validatedData.email);
-
-    if (user) {
-      return { status: "user_exists" } as RegisterActionState;
-    }
-    await createUser(validatedData.email, validatedData.password);
-    await signIn("credentials", {
-      email: validatedData.email,
-      password: validatedData.password,
-      redirect: false,
-    });
-
-    return { status: "success" };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { status: "invalid_data" };
-    }
-
-    return { status: "failed" };
-  }
+/**
+ * Redirects to the ForgeRock login page
+ * @param callbackUrl The URL to redirect to after successful authentication
+ */
+export const loginWithForgeRock = (callbackUrl: string = "/"): void => {
+    redirect(getLoginUrl(callbackUrl));
 };

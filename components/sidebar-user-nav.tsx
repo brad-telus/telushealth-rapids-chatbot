@@ -3,9 +3,9 @@
 import { ChevronUp } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import type { User } from "next-auth";
-import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { signOut, useSession } from "@/app/auth/next-auth-compat";
+import { User } from "@/app/auth/types";
 import {
   DropdownMenu,
   DropdownMenuContent,

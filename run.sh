@@ -14,9 +14,7 @@ ls -la /app/.next
 
 # Run database migrations
 echo "Running database migrations..."
-cd /app/lib/db && npx tsx migrate.ts
-
-cd /app
+tsx ./lib/db/migrate
 
 # Start the Next.js application
 echo "Starting the Next.js application..."
