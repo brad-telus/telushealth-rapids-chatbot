@@ -14,45 +14,46 @@ TAG_FORMATTED=$(echo "${TAG_FORMATTED/./"-"}")
 
 POSTGRES_URL="postgresql://testuser:245325!Ad342432@127.0.0.1:5432"
 
+# forgerock sandbox test envs
+FORGEROCK_CLIENT_ID=rPdSbGszH7NywPEmNV8
+FORGEROCK_CLIENT_SECRET=bRWkDxk3QnpAwboxvjTb9yJKvKD6D5ntCMXPjwnD
+FORGEROCK_ISSUER=https://openam-telushealth-sandboxnane1.forgeblocks.com/am/oauth2/alpha
+
 echo "Deploying '$1' image ${IMAGE_NAME}, under tag ${TAG_FORMATTED}"
 gcloud run deploy "$1" \
-        --image="${IMAGE_NAME}" \
-        --min-instances="0" \
-        --max-instances="10" \
-        --concurrency="100" \
-        --cpu="1" \
-        --memory="1Gi" \
-        --no-cpu-throttling \
-        --region=northamerica-northeast1 \
-        --no-allow-unauthenticated \
-        --add-cloudsql-instances=th-rapids-nonprod-2294:northamerica-northeast1:rpds-chat-rx-test \
-        --service-account="rapids-api-cloud-run-sa@${RAPIDS_PROJECT_ID}.iam.gserviceaccount.com" \
-        --set-env-vars "RAPIDS_PROJECT_ID=${RAPIDS_PROJECT_ID},LW_CLOUDRUN_ENV_GEN=gen1,RAPIDS_VERTICAL_NAME=${RAPIDS_VERTICAL_NAME},FULLY_QUALIFIED_DOMAIN=${FULLY_QUALIFIED_DOMAIN},NODE_ENV=production,AUTH_SECRET=123456789,POSTGRES_URL=${POSTGRES_URL}" \
-        --set-secrets=LaceworkAccessToken=LaceworkAccessToken:latest,LaceworkServerUrl=LaceworkServerUrl:latest \
-        --vpc-connector=kong-vpc-connector-${LOAD_BALANCER_VERSION} \
-        --ingress=internal \
-        --tag="${TAG_FORMATTED}"
+    --image="${IMAGE_NAME}" \
+    --min-instances="0" \
+    --max-instances="10" \
+    --concurrency="100" \
+    --cpu="1" \
+    --memory="1Gi" \
+    --no-cpu-throttling \
+    --region=northamerica-northeast1 \
+    --no-allow-unauthenticated \
+    --add-cloudsql-instances=th-rapids-nonprod-2294:northamerica-northeast1:rpds-chat-rx-test \
+    --service-account="rapids-api-cloud-run-sa@${RAPIDS_PROJECT_ID}.iam.gserviceaccount.com" \
+    --set-env-vars "RAPIDS_PROJECT_ID=${RAPIDS_PROJECT_ID},LW_CLOUDRUN_ENV_GEN=gen1,RAPIDS_VERTICAL_NAME=${RAPIDS_VERTICAL_NAME},FULLY_QUALIFIED_DOMAIN=${FULLY_QUALIFIED_DOMAIN},NODE_ENV=production,AUTH_SECRET=123456789,POSTGRES_URL=${POSTGRES_URL},FORGEROCK_CLIENT_ID=${FORGEROCK_CLIENT_ID},FORGEROCK_CLIENT_SECRET=${FORGEROCK_CLIENT_SECRET},FORGEROCK_ISSUER=${FORGEROCK_ISSUER}" \
+    --set-secrets=LaceworkAccessToken=LaceworkAccessToken:latest,LaceworkServerUrl=LaceworkServerUrl:latest \
+    --vpc-connector=kong-vpc-connector-${LOAD_BALANCER_VERSION} \
+    --ingress=internal \
+    --tag="${TAG_FORMATTED}"
 
 gcloud beta run services update "$1" \
-  --project="${RAPIDS_PROJECT_ID}" \
-  --add-custom-audiences="${INTERNAL_SERVICES_URL}" \
-  --region=northamerica-northeast1 \
-  --tag="${TAG_FORMATTED}"
+    --project="${RAPIDS_PROJECT_ID}" \
+    --add-custom-audiences="${INTERNAL_SERVICES_URL}" \
+    --region=northamerica-northeast1 \
+    --tag="${TAG_FORMATTED}"
 
 # Run database migration before routing traffic
 echo "Running database migration..."
 gcloud run jobs create chatbot-db-migration-temp \
-  --image="${IMAGE_NAME}" \
-  --args="pnpm,run,db:migrate" \
-  --add-cloudsql-instances=th-rapids-nonprod-2294:northamerica-northeast1:rpds-chat-rx-test \
-  --vpc-connector=kong-vpc-connector-${LOAD_BALANCER_VERSION} \
-  --set-env-vars="POSTGRES_URL=${POSTGRES_URL}" \
-  --region=northamerica-northeast1 \
-  --replace
-
-gcloud run jobs execute chatbot-db-migration-temp \
-  --region=northamerica-northeast1 \
-  --wait
+    --image="${IMAGE_NAME}" \
+    --args="pnpm,run,db:migrate" \
+    --add-cloudsql-instances=th-rapids-nonprod-2294:northamerica-northeast1:rpds-chat-rx-test \
+    --vpc-connector=kong-vpc-connector-${LOAD_BALANCER_VERSION} \
+    --set-env-vars="POSTGRES_URL=${POSTGRES_URL}" \
+    --region=northamerica-northeast1 \
+    --replace
 
 # Route traffic to the latest version
 gcloud run services update-traffic $1 --to-latest --region=northamerica-northeast1
