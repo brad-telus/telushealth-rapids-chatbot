@@ -40,7 +40,7 @@ if (!process.env.FORGEROCK_CLIENT_SECRET)
     missingEnvVars.push('FORGEROCK_CLIENT_SECRET');
 
 if (missingEnvVars.length > 0) {
-    throw new Error(`Missing required ForgeRock environment variables: ${missingEnvVars.join(', ')}`);
+    console.error(`Missing required ForgeRock environment variables: ${missingEnvVars.join(', ')}`);
 }
 
 const providers = [
