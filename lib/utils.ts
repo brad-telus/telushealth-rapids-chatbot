@@ -10,6 +10,7 @@ import { twMerge } from 'tailwind-merge';
 import type { DBMessage, Document } from '@/lib/db/schema';
 import { ChatSDKError, type ErrorCode } from './errors';
 import type { ChatMessage, ChatTools, CustomUIDataTypes } from './types';
+import { basePath as BASE_PATH } from "../next.config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -118,8 +119,6 @@ export function getTextFromMessage(message: ChatMessage): string {
 /**
  * Utility functions for handling basePath-aware URLs
  */
-const isProduction = process.env.NODE_ENV === "production";
-const BASE_PATH = isProduction ? '/rx' : '';
 
 /**
  * Creates a basePath-aware URL for server-side redirects

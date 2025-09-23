@@ -2,12 +2,17 @@ import type {NextConfig} from "next";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+export const basePath = isProduction ? '/rx' : '';
+
 const nextConfig: NextConfig = {
     output: 'standalone',
-    basePath: isProduction ? '/rx' : '',
+    basePath,
     trailingSlash: isProduction,
     images: {
         unoptimized: true, // the Next image optimization API is not secure
+        remotePatterns: [{
+            hostname: "main.rapidspoc.com",
+        }],
     },
 };
 

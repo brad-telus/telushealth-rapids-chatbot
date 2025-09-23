@@ -6,7 +6,7 @@ import { createBasepathUrl } from "@/lib/utils";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const redirectUrl = searchParams.get("redirectUrl") || "/";
+  const redirectUrl = searchParams.get("redirectUrl") || createBasepathUrl("/", request.url);
 
   const token = await getToken({
     req: request,
