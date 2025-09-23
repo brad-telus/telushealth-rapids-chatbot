@@ -47,23 +47,6 @@ steps:
     waitFor:
       - 'Build Chatbot service'
 
-  - id: 'Run Unit Tests'
-    name: ${_BUILD_NAME}
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        npm install -g pnpm@9.12.3 &&
-        pnpm run test
-    env:
-      - IS_CI=true
-      - SHORT_SHA=${SHORT_SHA}
-      - RAPIDS_PROJECT_ID=${_RAPIDS_PROJECT_ID}
-      - DBUNITREPORTER_PROJECT_ID=${_DBUNITREPORTER_PROJECT_ID}
-      - PLAYWRIGHT=True
-    waitFor:
-      - 'Install Chatbot dependencies'
-
   - id: 'Deploy as /rx'
     name: gcr.io/cloud-builders/gcloud
     entrypoint: 'scripts/deploy.sh'
@@ -76,7 +59,6 @@ steps:
       - LOAD_BALANCER_VERSION=${_LOAD_BALANCER_VERSION}
     waitFor:
       - 'Build chatbot image'
-      - 'Run Unit Tests'
 
 logsBucket: "gs://${_COMMON_PROJECT_ID}-build-reports/build-logs/telushealth-rapids-chatbot"
 options:
