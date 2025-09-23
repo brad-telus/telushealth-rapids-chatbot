@@ -21,7 +21,7 @@ steps:
         echo "Installing dependencies" &&
         npx google-artifactregistry-auth --repo-config=.npmrc --credential-config=.npmrc &&
         npm install -g pnpm@9.12.3 &&
-        pnpm install --dev
+        pnpm install --prod=false
     waitFor:
       - 'Stamp version'
 
