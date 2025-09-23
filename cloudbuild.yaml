@@ -13,7 +13,7 @@ steps:
       - SHORT_SHA=${SHORT_SHA}
 
   - id: 'Install Chatbot dependencies'
-    name: gcr.io/cloud-builders/npm
+    name: ${_BUILD_NAME}
     entrypoint: 'bash'
     args:
       - '-c'
@@ -26,7 +26,7 @@ steps:
       - 'Stamp version'
 
   - id: 'Build Chatbot service'
-    name: gcr.io/cloud-builders/npm
+    name: ${_BUILD_NAME}
     entrypoint: 'bash'
     args:
       - '-c'
@@ -48,7 +48,7 @@ steps:
       - 'Build Chatbot service'
 
   - id: 'Run Unit Tests'
-    name: gcr.io/cloud-builders/npm
+    name: ${_BUILD_NAME}
     entrypoint: 'bash'
     args:
       - '-c'
