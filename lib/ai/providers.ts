@@ -1,9 +1,9 @@
-import { gateway } from "@ai-sdk/gateway";
 import {
   customProvider,
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from "ai";
+import { a2a } from "a2a-ai-provider";
 import { isTestEnvironment } from "../constants";
 
 export const myProvider = isTestEnvironment
@@ -25,12 +25,12 @@ export const myProvider = isTestEnvironment
     })()
   : customProvider({
       languageModels: {
-        "chat-model": gateway.languageModel("xai/grok-2-vision-1212"),
+        "chat-model": a2a("http://localhost:8089/transformation/a2a"), // note: no trailing slash
         "chat-model-reasoning": wrapLanguageModel({
-          model: gateway.languageModel("xai/grok-3-mini"),
+          model: a2a("http://localhost:8089/transformation/a2a"),
           middleware: extractReasoningMiddleware({ tagName: "think" }),
         }),
-        "title-model": gateway.languageModel("xai/grok-2-1212"),
-        "artifact-model": gateway.languageModel("xai/grok-2-1212"),
+        "title-model": a2a("http://localhost:8089/transformation/a2a"),
+        "artifact-model": a2a("http://localhost:8089/transformation/a2a"),
       },
     });

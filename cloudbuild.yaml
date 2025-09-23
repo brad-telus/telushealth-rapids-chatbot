@@ -1,0 +1,79 @@
+steps:
+  - id: 'Stamp version'
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'bash'
+    args:
+      - 'scripts/version.sh'
+    env:
+      - BRANCH_NAME=${_BRANCH_NAME}
+      - BRANCH_TAG=${_BRANCH_TAG}
+      - MAIN_DOMAIN=${_MAIN_DOMAIN}
+      - RAPIDS_VERTICAL_NAME=${_RAPIDS_VERTICAL_NAME}
+      - FULLY_QUALIFIED_DOMAIN=${_FULLY_QUALIFIED_DOMAIN}
+      - SHORT_SHA=${SHORT_SHA}
+
+  - id: 'Install Chatbot dependencies'
+    name: ${_BUILD_NAME}
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Installing dependencies" &&
+        npx google-artifactregistry-auth --repo-config=.npmrc --credential-config=.npmrc &&
+        npm install -g pnpm@9.12.3 &&
+        pnpm install --frozen-lockfile
+    waitFor:
+      - 'Stamp version'
+
+  - id: 'Build Chatbot service'
+    name: ${_BUILD_NAME}
+    args: [ pnpm, build ]
+    env:
+      - RAPIDS_PROJECT_ID=${_RAPIDS_PROJECT_ID}
+      - NODE_ENV=production
+    waitFor:
+      - 'Install Chatbot dependencies'
+
+  - id: 'Build chatbot image'
+    name: gcr.io/kaniko-project/executor
+    args:
+      - --destination=${_IMAGE_BASE}chatbot:${_RAPIDS_VERTICAL_NAME}
+      - --destination=${_IMAGE_BASE}chatbot:${SHORT_SHA}
+    waitFor:
+      - 'Build Chatbot service'
+
+  - id: 'Run Unit Tests'
+    name: ${_BUILD_NAME}
+    entrypoint: pnpm
+    args: [ 'run', 'test' ]
+    env:
+      - IS_CI=true
+      - SHORT_SHA=${SHORT_SHA}
+      - RAPIDS_PROJECT_ID=${_RAPIDS_PROJECT_ID}
+      - DBUNITREPORTER_PROJECT_ID=${_DBUNITREPORTER_PROJECT_ID}
+      - PLAYWRIGHT=True
+    waitFor:
+      - 'Install Chatbot dependencies'
+
+  - id: 'Deploy as /rx'
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'scripts/deploy.sh'
+    args: [ "rx" ]
+    env:
+      - RAPIDS_PROJECT_ID=${_RAPIDS_PROJECT_ID}
+      - IMAGE_NAME=${_IMAGE_BASE}rx:${_RAPIDS_VERTICAL_NAME}
+      - DNS_NAME=${_DNS_NAME}
+      - RAPIDS_VERTICAL_NAME=${_RAPIDS_VERTICAL_NAME}
+      - LOAD_BALANCER_VERSION=${_LOAD_BALANCER_VERSION}
+    waitFor:
+      - 'Build chatbot image'
+      - 'Run Unit Tests'
+      - 'Run Linting'
+
+logsBucket: "gs://${_COMMON_PROJECT_ID}-build-reports/build-logs/telushealth-rapids-chatbot"
+options:
+  logging: GCS_ONLY
+timeout: '1200s'
+substitutions:
+  _IMAGE_BASE: northamerica-northeast1-docker.pkg.dev/${_COMMON_PROJECT_ID}/docker-builds/
+  _BUILD_NAME: northamerica-northeast1-docker.pkg.dev/${_COMMON_PROJECT_ID}/docker-builds/rapids-builder
