@@ -32,7 +32,7 @@ COPY package.json pnpm-lock.yaml ./
 COPY lib ./lib
 
 # Install minimal dependencies for migrations only
-RUN npm install -g pnpm@latest
+RUN npm install -g pnpm@latest tsx
 WORKDIR /app/lib/db
 RUN pnpm install
 WORKDIR /app
