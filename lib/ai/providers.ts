@@ -35,6 +35,7 @@ export function createProvider(cookieHeader?: string) {
             return fetch(url, {
                 ...init,
                 headers,
+                credentials: "include",
             });
         }
         : undefined;
