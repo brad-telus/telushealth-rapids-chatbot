@@ -18,8 +18,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Telushealth Rapids Chatbot",
-  description: "A chatbot for Telushealth Rapids",
+  title: "Rapids Chatbot",
+  description: "A chatbot for RAPIDS",
 };
 
 export default async function RootLayout({

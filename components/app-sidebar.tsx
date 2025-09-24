@@ -34,7 +34,7 @@ export function AppSidebar({ user }: { user: SessionData["user"] | undefined }) 
               }}
             >
               <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                Chatbot
+                RAPIDS RX
               </span>
             </Link>
             <Tooltip>
