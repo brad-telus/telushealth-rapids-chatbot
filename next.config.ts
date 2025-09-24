@@ -7,7 +7,7 @@ export const basePath = isProduction ? "/rx" : "";
 const nextConfig: NextConfig = {
     output: "standalone",
     basePath,
-    trailingSlash: isProduction,
+    trailingSlash: true,
     productionBrowserSourceMaps: false,
 
     // Fix workspace root warning

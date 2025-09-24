@@ -18,21 +18,19 @@ export default function LoginClient() {
         // Default to "/" for safety
         if (!rawCallbackUrl) return "/";
 
+        // Prevent login/auth pages from being callback URLs (handle trailing slash variations)
+        if (rawCallbackUrl.includes('/login') || rawCallbackUrl.includes('/api/auth')) {
+            return "/";
+        }
+
         try {
+            // Try to parse as full URL first
             const url = new URL(rawCallbackUrl);
-            // Prevent login/auth pages from being callback URLs
-            if (url.pathname.includes('/login') || url.pathname.includes('/api/auth')) {
-                return "/";
-            }
-            // Return just the pathname for relative URLs
+            // For full URLs, return the pathname (relative to domain)
             return url.pathname;
         } catch {
-            // If URL parsing fails, check if it's a relative path
+            // If URL parsing fails, treat as relative path
             if (rawCallbackUrl.startsWith('/')) {
-                // Prevent login/auth pages from being callback URLs
-                if (rawCallbackUrl.includes('/login') || rawCallbackUrl.includes('/api/auth')) {
-                    return "/";
-                }
                 return rawCallbackUrl;
             }
             // Default fallback

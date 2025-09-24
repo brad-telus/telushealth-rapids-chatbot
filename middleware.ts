@@ -19,10 +19,6 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Allow access to login and register pages
-    if (pathname === "/login" || pathname === "/register") {
-        return NextResponse.next();
-    }
 
     // If ForgeRock auth is disabled, set a default session
     if (!isForgeRockAuthEnabled) {
@@ -54,9 +50,11 @@ export async function middleware(request: NextRequest) {
         const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/api/auth');
         const callbackPath = isAuthPage ? '/' : pathname;
 
-        // Use FULLY_QUALIFIED_DOMAIN + pathname for proper callback URL construction
+        // Construct full URL using FULLY_QUALIFIED_DOMAIN for ForgeRock
         const callbackUrl = FULLY_QUALIFIED_DOMAIN
-            ? `${FULLY_QUALIFIED_DOMAIN}${callbackPath}`
+            ? (FULLY_QUALIFIED_DOMAIN.startsWith('http')
+                ? `${FULLY_QUALIFIED_DOMAIN}${callbackPath}`
+                : `https://${FULLY_QUALIFIED_DOMAIN}${callbackPath}`)
             : callbackPath;
 
         return NextResponse.redirect(
@@ -84,7 +82,8 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+         * - login or register (to avoid middleware loops with trailing slash redirects)
          */
-        "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+        "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|login|register).*)",
     ],
 };
