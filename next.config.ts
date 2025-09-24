@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
     output: "standalone",
     basePath,
     trailingSlash: isProduction,
+    productionBrowserSourceMaps: false,
+    experimental: {
+        optimizeCss: true,
+    },
     images: {
         unoptimized: true, // the Next image optimization API is not secure
         remotePatterns: [
