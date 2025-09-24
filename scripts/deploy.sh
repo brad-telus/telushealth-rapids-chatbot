@@ -51,7 +51,6 @@ gcloud run deploy "$1" \
   --set-env-vars="RAPIDS_PROJECT_ID=${RAPIDS_PROJECT_ID},LW_CLOUDRUN_ENV_GEN=gen1,RAPIDS_VERTICAL_NAME=${RAPIDS_VERTICAL_NAME},FULLY_QUALIFIED_DOMAIN=${FULLY_QUALIFIED_DOMAIN},NODE_ENV=production,AUTH_SECRET=123456789,POSTGRES_URL=${POSTGRES_URL},FORGEROCK_CLIENT_ID=${FORGEROCK_CLIENT_ID},FORGEROCK_CLIENT_SECRET=${FORGEROCK_CLIENT_SECRET},FORGEROCK_ISSUER=${FORGEROCK_ISSUER}" \
   --set-secrets="LaceworkAccessToken=LaceworkAccessToken:latest,LaceworkServerUrl=LaceworkServerUrl:latest" \
   --vpc-connector="kong-vpc-connector-${LOAD_BALANCER_VERSION}" \
-  --egress-settings="private-ranges-only" \
   --ingress="internal" \
   --tag="${TAG_FORMATTED}"
 
