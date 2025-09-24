@@ -21,7 +21,7 @@ DB_PASS_RAW='245325!Ad342432'   # TODO: move to Secret Manager
 # Get private IP of the Cloud SQL instance
 PRIVATE_IP=$(gcloud sql instances describe "${DB_INSTANCE_NAME}" \
   --project="${RAPIDS_PROJECT_ID}" \
-  --format="get(ipAddresses[?type=PRIVATE].ipAddress)")
+  --format="value(ipAddresses[0].ipAddress)")
 
 if [[ -z "${PRIVATE_IP}" ]]; then
   echo "ERROR: No private IP found for instance ${DB_INSTANCE_NAME} in project ${RAPIDS_PROJECT_ID}."
