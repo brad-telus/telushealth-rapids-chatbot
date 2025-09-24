@@ -1,5 +1,3 @@
-import { generateDummyPassword } from "./db/utils";
-
 export const isProductionEnvironment = process.env.NODE_ENV === "production";
 export const isDevelopmentEnvironment = process.env.NODE_ENV === "development";
 export const isTestEnvironment = Boolean(
@@ -11,4 +9,3 @@ export const isTestEnvironment = Boolean(
 // Feature flag for ForgeRock authentication
 export const isForgeRockAuthEnabled = process.env.ENABLE_FORGEROCK_AUTH !== "false";
 
-export const DUMMY_PASSWORD = generateDummyPassword();
