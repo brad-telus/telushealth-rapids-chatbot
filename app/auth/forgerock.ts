@@ -37,7 +37,7 @@ export const getAuthorizationUrl = (state: string = ""): string => {
     const params = new URLSearchParams({
         client_id: FORGEROCK_CLIENT_ID,
         response_type: "code",
-        scope: "openid profile email offline_access",
+        scope: "openid profile email",
         redirect_uri: REDIRECT_URI,
         state: state || Math.random().toString(36).substring(2, 15),
     });
@@ -70,7 +70,7 @@ export const exchangeCodeForTokens = async (code: string): Promise<any> => {
 
         if (!response.ok) {
             const error = await response.text();
-            throw new Error(`Failed to exchange code for tokens: ${error}`);
+            throw new Error(`Failed to exchange code for tokens: (${response.status}) ${error}`);
         }
 
         return await response.json();
