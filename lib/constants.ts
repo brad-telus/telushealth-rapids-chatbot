@@ -8,3 +8,5 @@ export const isTestEnvironment = Boolean(
 
 // Feature flag for ForgeRock authentication
 export const isForgeRockAuthEnabled = process.env.ENABLE_FORGEROCK_AUTH && process.env.ENABLE_FORGEROCK_AUTH === "true";
+
+export const FULLY_QUALIFIED_DOMAIN = process.env.FULLY_QUALIFIED_DOMAIN;

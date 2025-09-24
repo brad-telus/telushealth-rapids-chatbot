@@ -24,26 +24,6 @@ const nextConfig: NextConfig = {
         ],
     },
 
-    // Webpack optimizations
-    webpack: (config, { isServer }) => {
-        // Optimize build performance
-        config.optimization = {
-            ...config.optimization,
-            splitChunks: {
-                chunks: 'all',
-                cacheGroups: {
-                    vendor: {
-                        test: /[\\/]node_modules[\\/]/,
-                        name: 'vendors',
-                        chunks: 'all',
-                    },
-                },
-            },
-        };
-
-        return config;
-    },
-
     images: {
         unoptimized: true, // the Next image optimization API is not secure
         remotePatterns: [

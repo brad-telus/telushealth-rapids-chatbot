@@ -11,7 +11,34 @@ export default function LoginClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const error = searchParams.get("error");
-    const callbackUrl = searchParams.get("callbackUrl") || "/";
+    const rawCallbackUrl = searchParams.get("callbackUrl") || "/";
+
+    // Validate callback URL to prevent infinite redirects
+    const callbackUrl = (() => {
+        // Default to "/" for safety
+        if (!rawCallbackUrl) return "/";
+
+        try {
+            const url = new URL(rawCallbackUrl);
+            // Prevent login/auth pages from being callback URLs
+            if (url.pathname.includes('/login') || url.pathname.includes('/api/auth')) {
+                return "/";
+            }
+            // Return just the pathname for relative URLs
+            return url.pathname;
+        } catch {
+            // If URL parsing fails, check if it's a relative path
+            if (rawCallbackUrl.startsWith('/')) {
+                // Prevent login/auth pages from being callback URLs
+                if (rawCallbackUrl.includes('/login') || rawCallbackUrl.includes('/api/auth')) {
+                    return "/";
+                }
+                return rawCallbackUrl;
+            }
+            // Default fallback
+            return "/";
+        }
+    })();
 
     const {signIn, status} = useAuth();
     const [isLoading, setIsLoading] = useState(false);

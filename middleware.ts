@@ -1,5 +1,5 @@
 import {type NextRequest, NextResponse} from "next/server";
-import {isForgeRockAuthEnabled} from "./lib/constants";
+import {isForgeRockAuthEnabled, FULLY_QUALIFIED_DOMAIN} from "./lib/constants";
 import {createBasepathUrl} from "./lib/utils";
 import {getDefaultSession} from "./app/auth/session-types";
 
@@ -50,11 +50,19 @@ export async function middleware(request: NextRequest) {
 
     // If the user is not authenticated, redirect to the login page
     if (!isAuthenticated) {
-        const callbackUrl = encodeURIComponent(request.url);
+        // Don't use login or auth pages as callback URLs to prevent infinite redirects
+        const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/api/auth');
+        const callbackPath = isAuthPage ? '/' : pathname;
+
+        // Use FULLY_QUALIFIED_DOMAIN + pathname for proper callback URL construction
+        const callbackUrl = FULLY_QUALIFIED_DOMAIN
+            ? `${FULLY_QUALIFIED_DOMAIN}${callbackPath}`
+            : callbackPath;
+
         return NextResponse.redirect(
             new URL(
                 createBasepathUrl(
-                    `/login?callbackUrl=${callbackUrl}`,
+                    `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`,
                     request.url
                 )
             )
