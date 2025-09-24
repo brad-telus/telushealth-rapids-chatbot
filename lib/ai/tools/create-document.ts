@@ -1,5 +1,5 @@
 import { tool, type UIMessageStreamWriter } from "ai";
-import { Session } from "@/app/auth/types";
+import { SessionData } from "@/app/auth/types";
 import { z } from "zod";
 import {
   artifactKinds,
@@ -9,7 +9,7 @@ import type { ChatMessage } from "@/lib/types";
 import { generateUUID } from "@/lib/utils";
 
 type CreateDocumentProps = {
-  session: Session;
+  session: SessionData;
   dataStream: UIMessageStreamWriter<ChatMessage>;
 };
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User } from "@/app/auth/types";
+import { SessionData } from "@/app/auth/types";
 import { PlusIcon } from "@/components/icons";
 import { SidebarHistory } from "@/components/sidebar-history";
 import { SidebarUserNav } from "@/components/sidebar-user-nav";
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-export function AppSidebar({ user }: { user: User | undefined }) {
+export function AppSidebar({ user }: { user: SessionData["user"] | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
 

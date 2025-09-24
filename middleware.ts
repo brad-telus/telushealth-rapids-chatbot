@@ -26,6 +26,8 @@ export async function middleware(request: NextRequest) {
 
     // If ForgeRock auth is disabled, set a default session
     if (!isForgeRockAuthEnabled) {
+        console.warn(`WARNING: ForgeRock authentication is disabled. Using default user session.`);
+
         // Use a fixed UUID for the default user - this will be created on first API call
         const defaultSession = await getDefaultSession();
         const response = NextResponse.next();

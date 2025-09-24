@@ -1,5 +1,5 @@
 import type { UIMessageStreamWriter } from "ai";
-import { Session } from "@/app/auth/types";
+import { SessionData } from "@/app/auth/types";
 import { codeDocumentHandler } from "@/artifacts/code/server";
 import { sheetDocumentHandler } from "@/artifacts/sheet/server";
 import { textDocumentHandler } from "@/artifacts/text/server";
@@ -20,14 +20,14 @@ export type CreateDocumentCallbackProps = {
   id: string;
   title: string;
   dataStream: UIMessageStreamWriter<ChatMessage>;
-  session: Session;
+  session: SessionData;
 };
 
 export type UpdateDocumentCallbackProps = {
   document: Document;
   description: string;
   dataStream: UIMessageStreamWriter<ChatMessage>;
-  session: Session;
+  session: SessionData;
 };
 
 export type DocumentHandler<T = ArtifactKind> = {

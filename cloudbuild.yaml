@@ -64,6 +64,7 @@ options:
   logging: GCS_ONLY
   env:
     - NODE_ENV=production
+    - ENABLE_FORGEROCK_AUTH=true
 timeout: '1200s'
 substitutions:
   _IMAGE_BASE: northamerica-northeast1-docker.pkg.dev/${_COMMON_PROJECT_ID}/docker-builds/

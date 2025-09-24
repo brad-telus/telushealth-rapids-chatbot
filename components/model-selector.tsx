@@ -1,6 +1,6 @@
 "use client";
 
-import { Session } from "@/app/auth/types";
+import { SessionData } from "@/app/auth/types";
 import { startTransition, useMemo, useOptimistic, useState } from "react";
 import { saveChatModelAsCookie } from "@/app/(chat)/actions";
 import { Button } from "@/components/ui/button";
@@ -20,14 +20,14 @@ export function ModelSelector({
   selectedModelId,
   className,
 }: {
-  session: Session;
+  session: SessionData;
   selectedModelId: string;
 } & React.ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false);
   const [optimisticModelId, setOptimisticModelId] =
     useOptimistic(selectedModelId);
 
-  const userType = session.user.type;
+  const userType = "regular" as const; // All authenticated users are regular type
   const { availableChatModelIds } = entitlementsByUserType[userType];
 
   const availableChatModels = chatModels.filter((chatModel) =>
