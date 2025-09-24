@@ -3,14 +3,14 @@ import {redirect} from "next/navigation";
 import {Chat} from "@/components/chat";
 import {DataStreamHandler} from "@/components/data-stream-handler";
 import {DEFAULT_CHAT_MODEL} from "@/lib/ai/models";
-import {createBasepathPath, generateUUID} from "@/lib/utils";
+import {apiKey, generateUUID} from "@/lib/utils";
 import {getSession} from "../auth/session";
 
 export default async function Page() {
     const session = await getSession();
 
     if (!session) {
-        redirect(createBasepathPath("/api/auth/guest"));
+        redirect(apiKey("/api/auth/guest"));
     }
 
     const id = generateUUID();

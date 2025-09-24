@@ -146,3 +146,81 @@ export function createBasepathPath(path: string): string {
 export function getBasePath(): string {
   return BASE_PATH;
 }
+
+/**
+ * Centralized basePath-aware API utilities
+ *
+ * These functions should be used instead of manually calling createBasepathPath
+ * to ensure consistent basePath handling across the application.
+ *
+ * Usage examples:
+ * - API calls: apiFetch("/api/chat", options)
+ * - SWR keys: apiKey("/api/history") or apiKeyWithParams("/api/vote", { chatId })
+ * - Navigation: updateUrl("/chat/123")
+ * - Server redirects: createRedirectUrl("/login", request.url)
+ */
+
+/**
+ * Makes a basePath-aware API fetch call
+ * @param endpoint - API endpoint (should start with /)
+ * @param options - Fetch options
+ * @returns Promise<Response>
+ */
+export async function apiFetch(endpoint: string, options?: RequestInit): Promise<Response> {
+  return fetch(createBasepathPath(endpoint), options);
+}
+
+/**
+ * Makes a basePath-aware API fetch call with error handling
+ * @param endpoint - API endpoint (should start with /)
+ * @param options - Fetch options
+ * @returns Promise<Response>
+ */
+export async function apiRequestWithErrorHandlers(endpoint: string, options?: RequestInit): Promise<Response> {
+  return fetchWithErrorHandlers(createBasepathPath(endpoint), options);
+}
+
+/**
+ * Creates a basePath-aware SWR key for API endpoints
+ * @param endpoint - API endpoint (should start with /)
+ * @returns basePath-aware endpoint string
+ */
+export function apiKey(endpoint: string): string {
+  return createBasepathPath(endpoint);
+}
+
+/**
+ * Creates a basePath-aware SWR key with parameters
+ * @param endpoint - API endpoint (e.g., "/api/vote")
+ * @param params - Parameters to append
+ * @returns basePath-aware endpoint string with parameters
+ */
+export function apiKeyWithParams(endpoint: string, params: Record<string, string | number>): string {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    searchParams.append(key, String(value));
+  });
+  return createBasepathPath(`${endpoint}?${searchParams.toString()}`);
+}
+
+/**
+ * Centralized basePath-aware navigation utilities
+ */
+
+/**
+ * Updates the browser URL using basePath-aware paths
+ * @param path - The path to navigate to (should start with /)
+ */
+export function updateUrl(path: string): void {
+  window.history.replaceState({}, "", createBasepathPath(path));
+}
+
+/**
+ * Creates a basePath-aware Next.js redirect URL for server-side redirects
+ * @param path - The path to redirect to (should start with /)
+ * @param baseUrl - The base URL (from request.url)
+ * @returns Complete URL with basePath
+ */
+export function createRedirectUrl(path: string, baseUrl: string): string {
+  return createBasepathUrl(path, baseUrl);
+}

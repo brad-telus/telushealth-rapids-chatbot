@@ -12,7 +12,7 @@ import {
 import useSWR from "swr";
 import { useArtifact } from "@/hooks/use-artifact";
 import type { Document } from "@/lib/db/schema";
-import { cn, fetcher, createBasepathPath } from "@/lib/utils";
+import { cn, fetcher, apiKeyWithParams } from "@/lib/utils";
 import type { ArtifactKind, UIArtifact } from "./artifact";
 import { CodeEditor } from "./code-editor";
 import { DocumentToolCall, DocumentToolResult } from "./document";
@@ -37,7 +37,7 @@ export function DocumentPreview({
 
   const { data: documents, isLoading: isDocumentsFetching } = useSWR<
     Document[]
-  >(result ? createBasepathPath(`/api/document?id=${result.id}`) : null, fetcher);
+  >(result ? apiKeyWithParams("/api/document", { id: result.id }) : null, fetcher);
 
   const previewDocument = useMemo(() => documents?.[0], [documents]);
   const hitboxRef = useRef<HTMLDivElement>(null);

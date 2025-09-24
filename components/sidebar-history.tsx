@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import type { Chat } from "@/lib/db/schema";
-import { fetcher, createBasepathPath } from "@/lib/utils";
+import { fetcher, apiKeyWithParams } from "@/lib/utils";
 import { LoaderIcon } from "./icons";
 import { ChatItem } from "./sidebar-history-item";
 
@@ -85,7 +85,7 @@ export function getChatHistoryPaginationKey(
   }
 
   if (pageIndex === 0) {
-    return createBasepathPath(`/api/history?limit=${PAGE_SIZE}`);
+    return apiKeyWithParams("/api/history", { limit: PAGE_SIZE });
   }
 
   const firstChatFromPage = previousPageData.chats.at(-1);
@@ -94,7 +94,7 @@ export function getChatHistoryPaginationKey(
     return null;
   }
 
-  return createBasepathPath(`/api/history?ending_before=${firstChatFromPage.id}&limit=${PAGE_SIZE}`);
+  return apiKeyWithParams("/api/history", { ending_before: firstChatFromPage.id, limit: PAGE_SIZE });
 }
 
 export function SidebarHistory({ user }: { user: SessionData["user"] | undefined }) {

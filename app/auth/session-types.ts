@@ -1,5 +1,5 @@
-import {createBasepathPath} from "@/lib/utils";
-import {DEFAULT_EMAIL, DEFAULT_USER_ID} from "@/lib/db/init";
+import {apiKey} from "@/lib/utils";
+import {DEFAULT_EMAIL, DEFAULT_USER_ID} from "@/lib/constants";
 
 // Session cookie name
 export const SESSION_COOKIE_NAME = "forgerock_session";
@@ -35,11 +35,11 @@ export const getDefaultSession = async (defaultUserId: string = DEFAULT_USER_ID,
 
 // Get login URL
 export const getLoginUrl = (callbackUrl?: string): string => {
-    const baseUrl = createBasepathPath("/api/auth/signin");
+    const baseUrl = apiKey("/api/auth/signin");
     return callbackUrl ? `${baseUrl}?callbackUrl=${encodeURIComponent(callbackUrl)}` : baseUrl;
 };
 
 // Get logout URL
 export const getLogoutUrl = (): string => {
-    return createBasepathPath("/api/auth/signout");
+    return apiKey("/api/auth/signout");
 };

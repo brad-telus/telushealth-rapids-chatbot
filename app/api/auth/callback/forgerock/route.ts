@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import {exchangeCodeForTokens, getUserInfo} from "@/app/auth/forgerock";
 import {setSession} from "@/app/auth/session";
-import {createBasepathPath} from "@/lib/utils";
+import {createRedirectUrl} from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
     // Get the authorization code from the query parameters
@@ -15,8 +15,7 @@ export async function GET(request: NextRequest) {
         console.error("ForgeRock authentication error:", error);
         return NextResponse.redirect(
             new URL(
-                createBasepathPath(`/login?error=${encodeURIComponent("Authentication failed")}`),
-                request.url
+                createRedirectUrl(`/login?error=${encodeURIComponent("Authentication failed")}`, request.url)
             )
         );
     }
@@ -26,8 +25,7 @@ export async function GET(request: NextRequest) {
         console.error("Missing authorization code");
         return NextResponse.redirect(
             new URL(
-                createBasepathPath(`/login?error=${encodeURIComponent("Missing authorization code")}`),
-                request.url
+                createRedirectUrl(`/login?error=${encodeURIComponent("Missing authorization code")}`, request.url)
             )
         );
     }
@@ -67,15 +65,14 @@ export async function GET(request: NextRequest) {
         });
 
         // Redirect to the callback URL
-        return NextResponse.redirect(new URL(createBasepathPath(callbackUrl), request.url));
+        return NextResponse.redirect(new URL(createRedirectUrl(callbackUrl, request.url)));
     } catch (error) {
         console.error("Error handling ForgeRock callback:", error);
 
         // Redirect to login page with error
         return NextResponse.redirect(
             new URL(
-                createBasepathPath(`/login?error=${encodeURIComponent("Failed to authenticate with ForgeRock")}`),
-                request.url
+                createRedirectUrl(`/login?error=${encodeURIComponent("Failed to authenticate with ForgeRock")}`, request.url)
             )
         );
     }

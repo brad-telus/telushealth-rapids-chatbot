@@ -10,3 +10,7 @@ export const isTestEnvironment = Boolean(
 export const isForgeRockAuthEnabled = process.env.ENABLE_FORGEROCK_AUTH && process.env.ENABLE_FORGEROCK_AUTH === "true";
 
 export const FULLY_QUALIFIED_DOMAIN = process.env.FULLY_QUALIFIED_DOMAIN;
+
+
+export const DEFAULT_EMAIL = "default@example.com";
+export const DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000001";

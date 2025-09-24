@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthorizationUrl } from "@/app/auth/forgerock";
-import { createBasepathPath } from "@/lib/utils";
+import { createRedirectUrl } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   // Get the callback URL from the query parameters
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   // Only support ForgeRock provider
   if (provider && provider !== "forgerock") {
     return NextResponse.redirect(
-      new URL(createBasepathPath("/login"), request.url)
+      new URL(createRedirectUrl("/login", request.url))
     );
   }
   
@@ -32,8 +32,7 @@ export async function GET(request: NextRequest) {
     // Redirect to login page with error
     return NextResponse.redirect(
       new URL(
-        createBasepathPath(`/login?error=${encodeURIComponent("Failed to authenticate with ForgeRock")}`),
-        request.url
+        createRedirectUrl(`/login?error=${encodeURIComponent("Failed to authenticate with ForgeRock")}`, request.url)
       )
     );
   }

@@ -6,7 +6,7 @@ import { Chat } from "@/components/chat";
 import { DataStreamHandler } from "@/components/data-stream-handler";
 import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
 import { getChatById, getMessagesByChatId } from "@/lib/db/queries";
-import { convertToUIMessages, createBasepathPath } from "@/lib/utils";
+import { convertToUIMessages, apiKey } from "@/lib/utils";
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -20,7 +20,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   const session = await getSession();
 
   if (!session) {
-    redirect(createBasepathPath("/api/auth/guest"));
+    redirect(apiKey("/api/auth/guest"));
   }
 
   if (chat.visibility === "private") {

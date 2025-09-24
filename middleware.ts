@@ -1,6 +1,6 @@
 import {type NextRequest, NextResponse} from "next/server";
 import {isForgeRockAuthEnabled, FULLY_QUALIFIED_DOMAIN} from "./lib/constants";
-import {createBasepathUrl, createBasepathPath, getBasePath} from "./lib/utils";
+import {createRedirectUrl, apiKey, createBasepathPath} from "./lib/utils";
 import {getDefaultSession} from "./app/auth/session-types";
 
 export async function middleware(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Allow access to authentication routes
-    const authPath = createBasepathPath("/api/auth");
+    const authPath = apiKey("/api/auth");
     if (pathname.startsWith(authPath)) {
         return NextResponse.next();
     }
@@ -49,7 +49,7 @@ export async function middleware(request: NextRequest) {
     if (!isAuthenticated) {
         // Don't use login or auth pages as callback URLs to prevent infinite redirects
         const loginPath = createBasepathPath('/login');
-        const authApiPath = createBasepathPath('/api/auth');
+        const authApiPath = apiKey('/api/auth');
         const isAuthPage = pathname.startsWith(loginPath) || pathname.startsWith(authApiPath);
         const callbackPath = isAuthPage ? '/' : pathname;
 
@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
 
         return NextResponse.redirect(
             new URL(
-                createBasepathUrl(
+                createRedirectUrl(
                     `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`,
                     request.url
                 )

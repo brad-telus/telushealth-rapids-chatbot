@@ -5,7 +5,7 @@ import { useSWRConfig } from "swr";
 import { useCopyToClipboard } from "usehooks-ts";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
-import { createBasepathPath } from "@/lib/utils";
+import { apiFetch, apiKeyWithParams } from "@/lib/utils";
 import { Action, Actions } from "./elements/actions";
 import { CopyIcon, PencilEditIcon, ThumbDownIcon, ThumbUpIcon } from "./icons";
 
@@ -77,7 +77,7 @@ export function PureMessageActions({
         data-testid="message-upvote"
         disabled={vote?.isUpvoted}
         onClick={() => {
-          const upvote = fetch(createBasepathPath("/api/vote"), {
+          const upvote = apiFetch("/api/vote", {
             method: "PATCH",
             body: JSON.stringify({
               chatId,
@@ -90,7 +90,7 @@ export function PureMessageActions({
             loading: "Upvoting Response...",
             success: () => {
               mutate<Vote[]>(
-                createBasepathPath(`/api/vote?chatId=${chatId}`),
+                apiKeyWithParams("/api/vote", { chatId }),
                 (currentVotes) => {
                   if (!currentVotes) {
                     return [];
@@ -126,7 +126,7 @@ export function PureMessageActions({
         data-testid="message-downvote"
         disabled={vote && !vote.isUpvoted}
         onClick={() => {
-          const downvote = fetch(createBasepathPath("/api/vote"), {
+          const downvote = apiFetch("/api/vote", {
             method: "PATCH",
             body: JSON.stringify({
               chatId,
@@ -139,7 +139,7 @@ export function PureMessageActions({
             loading: "Downvoting Response...",
             success: () => {
               mutate<Vote[]>(
-                createBasepathPath(`/api/vote?chatId=${chatId}`),
+                apiKeyWithParams("/api/vote", { chatId }),
                 (currentVotes) => {
                   if (!currentVotes) {
                     return [];

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { SessionData, getLoginUrl, getLogoutUrl } from "./session-types";
-import { createBasepathPath } from "@/lib/utils";
+import { apiFetch } from "@/lib/utils";
 
 // Define the authentication context type
 type AuthContextType = {
@@ -66,7 +66,7 @@ export function useAuth() {
 // Function to get the session on the server side
 export async function getServerSession(): Promise<SessionData | null> {
   try {
-    const response = await fetch(createBasepathPath("/api/auth/session"), {
+    const response = await apiFetch("/api/auth/session", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -1,4 +1,4 @@
-import {createBasepathPath} from "@/lib/utils";
+import {apiKey, createBasepathPath} from "@/lib/utils";
 
 // ForgeRock OAuth Configuration
 const FORGEROCK_CLIENT_ID = process.env.FORGEROCK_CLIENT_ID || "";
@@ -8,7 +8,7 @@ const DISCOVERY_URI = `${FORGEROCK_ISSUER}/.well-known/openid-configuration`;
 
 // Redirect URIs
 const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
-const REDIRECT_URI = `${BASE_URL}${createBasepathPath("/api/auth/callback/forgerock")}`;
+const REDIRECT_URI = `${BASE_URL}${apiKey("/api/auth/callback/forgerock")}`
 const LOGOUT_REDIRECT_URI = `${BASE_URL}${createBasepathPath("/")}`;
 
 // Validate required ForgeRock environment variables

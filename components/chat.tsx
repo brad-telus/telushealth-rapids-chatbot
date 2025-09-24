@@ -24,7 +24,7 @@ import type { Vote } from "@/lib/db/schema";
 import { ChatSDKError } from "@/lib/errors";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import type { AppUsage } from "@/lib/usage";
-import { fetcher, fetchWithErrorHandlers, generateUUID, createBasepathPath } from "@/lib/utils";
+import { fetcher, fetchWithErrorHandlers, generateUUID, apiKey, apiKeyWithParams, updateUrl } from "@/lib/utils";
 import { Artifact } from "./artifact";
 import { useDataStream } from "./data-stream-provider";
 import { Messages } from "./messages";
@@ -82,7 +82,7 @@ export function Chat({
     experimental_throttle: 100,
     generateId: generateUUID,
     transport: new DefaultChatTransport({
-      api: createBasepathPath("/api/chat"),
+      api: apiKey("/api/chat"),
       fetch: fetchWithErrorHandlers,
       prepareSendMessagesRequest(request) {
         return {
@@ -135,12 +135,12 @@ export function Chat({
       });
 
       setHasAppendedQuery(true);
-      window.history.replaceState({}, "", createBasepathPath(`/chat/${id}`));
+      updateUrl(`/chat/${id}`);
     }
   }, [query, sendMessage, hasAppendedQuery, id]);
 
   const { data: votes } = useSWR<Vote[]>(
-    messages.length >= 2 ? createBasepathPath(`/api/vote?chatId=${id}`) : null,
+    messages.length >= 2 ? apiKeyWithParams("/api/vote", { chatId: id }) : null,
     fetcher
   );
 
