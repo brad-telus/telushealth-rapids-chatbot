@@ -190,7 +190,7 @@ export function apiKey(endpoint: string): string {
 }
 
 /**
- * Creates a basePath-aware SWR key with parameters
+ * Creates a basePath-aware SWR key with parameters.
  * @param endpoint - API endpoint (e.g., "/api/vote")
  * @param params - Parameters to append
  * @returns basePath-aware endpoint string with parameters

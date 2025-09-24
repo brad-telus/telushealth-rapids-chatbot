@@ -28,8 +28,10 @@ export function createProvider(cookieHeader?: string) {
     // Create custom fetch implementation that includes cookies
     const fetchWithCookies = cookieHeader
         ? (url: RequestInfo | URL, init?: RequestInit) => {
+
             const headers = new Headers(init?.headers);
             headers.set("Cookie", cookieHeader);
+            console.log("Using custom fetch with cookies:", {headers, url});
             return fetch(url, {
                 ...init,
                 headers,

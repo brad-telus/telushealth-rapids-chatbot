@@ -6,10 +6,32 @@ const FORGEROCK_CLIENT_SECRET = process.env.FORGEROCK_CLIENT_SECRET || "";
 const FORGEROCK_ISSUER = process.env.FORGEROCK_ISSUER || "";
 const DISCOVERY_URI = `${FORGEROCK_ISSUER}/.well-known/openid-configuration`;
 
+// Cache for OpenID configuration
+let oidcConfig: any = null;
+
 // Redirect URIs
 const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 const REDIRECT_URI = `${BASE_URL}${apiKey("/api/auth/callback/forgerock")}`
 const LOGOUT_REDIRECT_URI = `${BASE_URL}${createBasepathPath("/")}`;
+
+// Fetch OpenID configuration
+const getOidcConfig = async () => {
+    if (oidcConfig) {
+        return oidcConfig;
+    }
+
+    try {
+        const response = await fetch(DISCOVERY_URI);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch OIDC config: ${response.status}`);
+        }
+        oidcConfig = await response.json();
+        return oidcConfig;
+    } catch (error) {
+        console.error("Error fetching OIDC configuration:", error);
+        throw error;
+    }
+};
 
 // Validate required ForgeRock environment variables
 const validateConfig = () => {
@@ -29,10 +51,12 @@ const validateConfig = () => {
 };
 
 // Generate the authorization URL
-export const getAuthorizationUrl = (state: string = ""): string => {
+export const getAuthorizationUrl = async (state: string = ""): Promise<string> => {
     if (!validateConfig()) {
         throw new Error("ForgeRock configuration is invalid");
     }
+
+    const config = await getOidcConfig();
 
     const params = new URLSearchParams({
         client_id: FORGEROCK_CLIENT_ID,
@@ -42,7 +66,7 @@ export const getAuthorizationUrl = (state: string = ""): string => {
         state: state || Math.random().toString(36).substring(2, 15),
     });
 
-    return `${FORGEROCK_ISSUER}/authorize?${params.toString()}`;
+    return `${config.authorization_endpoint}?${params.toString()}`;
 };
 
 // Exchange authorization code for tokens
@@ -51,7 +75,10 @@ export const exchangeCodeForTokens = async (code: string): Promise<any> => {
         throw new Error("ForgeRock configuration is invalid");
     }
 
-    const params = new URLSearchParams({
+    const config = await getOidcConfig();
+
+    // Use client_secret_post method as specified in ForgeRock config
+    const body = new URLSearchParams({
         grant_type: "authorization_code",
         code,
         redirect_uri: REDIRECT_URI,
@@ -60,12 +87,12 @@ export const exchangeCodeForTokens = async (code: string): Promise<any> => {
     });
 
     try {
-        const response = await fetch(`${FORGEROCK_ISSUER}/token`, {
+        const response = await fetch(config.token_endpoint, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: params.toString(),
+            body: body.toString(),
         });
 
         if (!response.ok) {
@@ -86,8 +113,10 @@ export const getUserInfo = async (accessToken: string): Promise<any> => {
         throw new Error("ForgeRock configuration is invalid");
     }
 
+    const config = await getOidcConfig();
+
     try {
-        const response = await fetch(`${FORGEROCK_ISSUER}/userinfo`, {
+        const response = await fetch(config.userinfo_endpoint, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
@@ -111,12 +140,14 @@ export const logout = async (idToken: string): Promise<string> => {
         throw new Error("ForgeRock configuration is invalid");
     }
 
+    const config = await getOidcConfig();
+
     const params = new URLSearchParams({
         id_token_hint: idToken,
         post_logout_redirect_uri: LOGOUT_REDIRECT_URI,
     });
 
-    return `${FORGEROCK_ISSUER}/logout?${params.toString()}`;
+    return `${config.end_session_endpoint}?${params.toString()}`;
 };
 
 // Refresh access token
@@ -125,7 +156,9 @@ export const refreshAccessToken = async (refreshToken: string): Promise<any> => 
         throw new Error("ForgeRock configuration is invalid");
     }
 
-    const params = new URLSearchParams({
+    const config = await getOidcConfig();
+
+    const body = new URLSearchParams({
         grant_type: "refresh_token",
         refresh_token: refreshToken,
         client_id: FORGEROCK_CLIENT_ID,
@@ -133,12 +166,12 @@ export const refreshAccessToken = async (refreshToken: string): Promise<any> => 
     });
 
     try {
-        const response = await fetch(`${FORGEROCK_ISSUER}/token`, {
+        const response = await fetch(config.token_endpoint, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: params.toString(),
+            body: body.toString(),
         });
 
         if (!response.ok) {

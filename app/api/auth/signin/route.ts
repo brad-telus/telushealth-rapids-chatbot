@@ -20,10 +20,10 @@ export async function GET(request: NextRequest) {
   try {
     // Generate a state parameter to prevent CSRF attacks
     const state = Buffer.from(JSON.stringify({ callbackUrl })).toString("base64");
-    
-    // Generate the authorization URL
-    const authorizationUrl = getAuthorizationUrl(state);
-    
+
+    // Generate the authorization URL (now async)
+    const authorizationUrl = await getAuthorizationUrl(state);
+
     // Redirect to the authorization URL
     return NextResponse.redirect(authorizationUrl);
   } catch (error) {

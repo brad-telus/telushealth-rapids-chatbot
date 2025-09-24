@@ -14,6 +14,10 @@ export async function middleware(request: NextRequest) {
         return new Response("pong", {status: 200});
     }
 
+    // log request, path, payload, and headers
+    console.log(`[MIDDLEWARE] ${request.method} ${pathname} - Headers: ${JSON.stringify(Object.fromEntries(request.headers))}`);
+
+
     // Allow access to authentication routes
     const authPath = apiKey("/api/auth");
     if (pathname.startsWith(authPath)) {
