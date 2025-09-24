@@ -28,7 +28,7 @@ if [[ -z "${PRIVATE_IP}" ]]; then
   exit 1
 fi
 
-echo "DB Connection Info - Host: ${PRIVATE_IP}, DB: ${DB_NAME}, User: ${DB_USER}"
+echo "DB ${DB_INSTANCE_NAME} Connection Info - Host: ${PRIVATE_IP}, User: ${DB_USER}"
 
 POSTGRES_URL="postgresql://${DB_USER}:${DB_PASS_RAW}@${PRIVATE_IP}:5432"
 
