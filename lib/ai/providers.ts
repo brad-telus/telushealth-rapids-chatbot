@@ -42,8 +42,16 @@ export function createProvider(cookieHeader?: string) {
                 method: (init?.method as any) || 'GET',
                 headers,
                 data: init?.body,
-                withCredentials: true,
-                validateStatus: () => true, // Don't throw on HTTP error status codes
+                beforeRedirect: (opts: any) => {
+                    opts.headers = opts.headers || {};
+                    console.log(`Redirecting to ${opts.href}, current headers:`, opts.headers);
+                    if (!("Cookie" in opts.headers)) {
+                        console.log("Adding Cookie header to redirect request");
+                        opts.headers["Cookie"] = cookieHeader;
+                    } else {
+                        console.log("Cookie header already present in redirect request");
+                    }
+                },
             });
 
             // Convert axios response to fetch-like Response object
