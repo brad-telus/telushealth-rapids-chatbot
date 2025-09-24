@@ -45,7 +45,7 @@ export function createProvider(cookieHeader?: string) {
                 data: init?.body,
                 beforeRedirect: (opts: any) => {
                     opts.headers = opts.headers || {};
-                    console.log(`Redirecting to ${opts.href}, current headers:`, opts.headers);
+                    console.log(`Redirecting to ${opts.href}, opts:`, opts);
                     if (!("Cookie" in opts.headers)) {
                         console.log("Adding Cookie header to redirect request");
                         opts.headers["Cookie"] = cookieHeader;
