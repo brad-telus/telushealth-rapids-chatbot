@@ -15,12 +15,8 @@ TAG_FORMATTED=${RAPIDS_VERTICAL_NAME//./-}
 
 # DB settings
 DB_INSTANCE_NAME="rpds-chat-rx-test"
-DB_NAME="${POSTGRES_DB:-postgres}"
 DB_USER="testuser"
-DB_PASS_RAW='245325!Ad342432'   # move to Secret Manager ASAP
-
-# URL-encode '!' in password to avoid breaking the URL
-DB_PASS="${DB_PASS_RAW//!/%%21}"
+DB_PASS_RAW='245325!Ad342432'   # TODO: move to Secret Manager
 
 # Get private IP of the Cloud SQL instance
 PRIVATE_IP=$(gcloud sql instances describe "${DB_INSTANCE_NAME}" \
@@ -34,7 +30,7 @@ fi
 
 echo "DB Connection Info - Host: ${PRIVATE_IP}, DB: ${DB_NAME}, User: ${DB_USER}"
 
-POSTGRES_URL="postgresql://${DB_USER}:${DB_PASS}@${PRIVATE_IP}:5432/${DB_NAME}"
+POSTGRES_URL="postgresql://${DB_USER}:${DB_PASS_RAW}@${PRIVATE_IP}:5432"
 
 # ForgeRock sandbox test envs
 FORGEROCK_CLIENT_ID=rPdSbGszH7NywPEmNV8
