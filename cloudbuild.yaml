@@ -21,7 +21,11 @@ steps:
         echo "Installing dependencies" &&
         npx google-artifactregistry-auth --repo-config=.npmrc --credential-config=.npmrc &&
         npm install -g pnpm@9.12.3 &&
-        pnpm install --prod=false
+        # Use frozen lockfile for faster, deterministic installs
+        pnpm install --prod=false --frozen-lockfile --prefer-frozen-lockfile
+    env:
+      # Enable pnpm store caching
+      - PNPM_CACHE_FOLDER=/workspace/.pnpm-store
     waitFor:
       - 'Stamp version'
 
@@ -32,10 +36,16 @@ steps:
       - '-c'
       - |
         npm install -g pnpm@9.12.3 &&
+        # Use optimized build with increased memory and faster settings
+        export NODE_OPTIONS="--max-old-space-size=8192 --max-semi-space-size=256" &&
+        export UV_THREADPOOL_SIZE=32 &&
+        # Use the optimized build script
         pnpm next:build
     env:
       - RAPIDS_PROJECT_ID=${_RAPIDS_PROJECT_ID}
       - NODE_ENV=production
+      # Enable pnpm store caching
+      - PNPM_CACHE_FOLDER=/workspace/.pnpm-store
     waitFor:
       - 'Install Chatbot dependencies'
 
@@ -63,6 +73,13 @@ steps:
 logsBucket: "gs://${_COMMON_PROJECT_ID}-build-reports/build-logs/telushealth-rapids-chatbot"
 options:
   logging: GCS_ONLY
+  machineType: E2_HIGHCPU_32
+  # Add volume mounts for caching
+  volumes:
+    - name: 'pnpm-cache'
+      path: '/workspace/.pnpm-store'
+    - name: 'next-cache'
+      path: '/workspace/.next/cache'
   env:
     - NODE_ENV=production
     - ENABLE_FORGEROCK_AUTH=true

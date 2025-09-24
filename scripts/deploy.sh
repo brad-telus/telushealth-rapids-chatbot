@@ -13,9 +13,9 @@ echo "INTERNAL_SERVICES_URL: ${INTERNAL_SERVICES_URL}"
 TAG_FORMATTED=${RAPIDS_VERTICAL_NAME//./-}
 
 # DB settings
-DB_INSTANCE_NAME="rpds-chat-rx-test"
-DB_USER="testuser"
-DB_PASS_RAW='245325!Ad342432'   # TODO: move to Secret Manager
+DB_INSTANCE_NAME="rx-test"
+DB_USER="postgres"
+DB_PASS_RAW='aOVoX~7aQS'   # TODO: move to Secret Manager
 
 # Get private IP of the Cloud SQL instance
 PRIVATE_IP=$(gcloud sql instances describe "${DB_INSTANCE_NAME}" \
