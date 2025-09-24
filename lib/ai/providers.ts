@@ -34,12 +34,13 @@ export function createProvider(cookieHeader?: string) {
                 ...Object.fromEntries(new Headers(init?.headers).entries()),
                 cookie: cookieHeader,
             };
+            const method = init?.method;
 
-            console.log("Using custom axios with cookies:", {headers, url: requestUrl});
+            console.log("Using custom axios with cookies:", {headers, method, url, init});
 
             const response = await axios({
                 url: requestUrl,
-                method: (init?.method as any) || 'GET',
+                method,
                 headers,
                 data: init?.body,
                 beforeRedirect: (opts: any) => {
