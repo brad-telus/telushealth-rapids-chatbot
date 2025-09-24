@@ -2,7 +2,6 @@
 set -euo pipefail
 
 # Required: RAPIDS_PROJECT_ID, IMAGE_NAME, RAPIDS_VERTICAL_NAME, LOAD_BALANCER_VERSION, FULLY_QUALIFIED_DOMAIN
-# Optional: POSTGRES_DB (defaults to 'postgres')
 
 PATH=$PATH:/gcloud/bin
 gcloud config set project "${RAPIDS_PROJECT_ID}"
