@@ -1,4 +1,5 @@
 import {createBasepathPath} from "@/lib/utils";
+import {DEFAULT_EMAIL, DEFAULT_USER_ID} from "@/lib/db/init";
 
 // Session cookie name
 export const SESSION_COOKIE_NAME = "forgerock_session";
@@ -16,19 +17,13 @@ export type SessionData = {
     expiresAt: number;
 };
 
-// Default user session
-export const getDefaultSession = async (): Promise<SessionData> => {
+// Default user session with fixed UUID
+export const getDefaultSession = async (defaultUserId: string = DEFAULT_USER_ID, defaultEmail = DEFAULT_EMAIL): Promise<SessionData> => {
     // Create a session that expires in 24 hours
     const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-
-    const defaultEmail = "default@example.com";
-
-    // The default user is now initialized in lib/db/init.ts
-    // No SQL calls here, just return the session data
-
     return {
         user: {
-            id: "default-user",
+            id: defaultUserId,
             name: "Default User",
             email: defaultEmail,
         },

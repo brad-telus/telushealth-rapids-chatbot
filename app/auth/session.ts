@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { SESSION_COOKIE_NAME, type SessionData, getDefaultSession } from "./session-types";
+import { SESSION_COOKIE_NAME, type SessionData } from "./session-types";
 
 // Get session from cookie
 export const getSession = async (): Promise<SessionData | null> => {

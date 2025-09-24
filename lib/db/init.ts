@@ -1,18 +1,15 @@
-import {createUser, getUser} from "./queries";
+import {createUser, createUserWithId, deleteUser, getUser} from "./queries";
 import {generateDummyPassword} from "./utils";
 
+export const DEFAULT_EMAIL = "default@example.com";
+export const DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000001";
+
+
 export const initializeDefaultUser = async (): Promise<void> => {
-    const defaultEmail = "default@example.com";
+    // delete if the default user already exists
+    await deleteUser(DEFAULT_EMAIL);
 
-    // Check if the default user already exists
-    const existingUsers = await getUser(defaultEmail);
-
-    // If the default user doesn't exist, create it
-    if (existingUsers.length === 0) {
-        console.log("Creating default user in the database");
-        const dummyPassword = generateDummyPassword();
-        await createUser(defaultEmail, dummyPassword);
-    } else {
-        console.log(`Default user ${defaultEmail} already exists in the database`);
-    }
+    console.log("Creating default user in the database");
+    const dummyPassword = generateDummyPassword();
+    await createUserWithId(DEFAULT_EMAIL, dummyPassword, DEFAULT_USER_ID);
 };

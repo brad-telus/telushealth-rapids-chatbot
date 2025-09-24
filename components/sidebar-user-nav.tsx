@@ -4,8 +4,8 @@ import { ChevronUp } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { signOut, useSession } from "@/app/auth/next-auth-compat";
-import { User } from "@/app/auth/types";
+import { useAuth } from "@/app/auth/hooks";
+import { SessionData } from "@/app/auth/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +21,9 @@ import {
 import { LoaderIcon } from "./icons";
 import { toast } from "./toast";
 
-export function SidebarUserNav({ user }: { user: User }) {
+export function SidebarUserNav({ user }: { user: SessionData["user"] }) {
   const router = useRouter();
-  const { data, status } = useSession();
+  const { session, status, signOut } = useAuth();
   const { setTheme, resolvedTheme } = useTheme();
 
   // All users are now authenticated via ForgeRock (no more guest users)
@@ -97,9 +97,7 @@ export function SidebarUserNav({ user }: { user: User }) {
                   if (isGuest) {
                     router.push("/login");
                   } else {
-                    signOut({
-                      redirectTo: "/",
-                    });
+                    signOut("/");
                   }
                 }}
                 type="button"

@@ -1,17 +1,6 @@
-// Define types that match the NextAuth types to make it easier to update components
+// ForgeRock auth types - no NextAuth compatibility needed
 
-export type User = {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-  type?: string;
-};
+export type UserType = "regular";
 
-export type Session = {
-  user: User;
-  expires: string;
-};
-
-// Export the SessionData type from session-types.ts for convenience
+// Re-export SessionData as the primary session type
 export { type SessionData } from "./session-types";
