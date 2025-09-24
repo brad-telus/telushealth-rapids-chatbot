@@ -3,6 +3,7 @@ import {
     extractReasoningMiddleware,
     wrapLanguageModel,
 } from "ai";
+import axios from "axios";
 import {createA2a} from "../a2a-provider";
 import {FULLY_QUALIFIED_DOMAIN, isTestEnvironment} from "../constants";
 
@@ -25,24 +26,41 @@ export function createProvider(cookieHeader?: string) {
         });
     }
 
-    // Create custom fetch implementation that includes cookies
-    const fetchWithCookies = cookieHeader
-        ? (url: RequestInfo | URL, init?: RequestInit) => {
+    // Create custom axios implementation that includes cookies
+    const axiosWithCookies = cookieHeader
+        ? async (url: RequestInfo | URL, init?: RequestInit) => {
+            const requestUrl = url.toString();
+            const headers = {
+                ...Object.fromEntries(new Headers(init?.headers).entries()),
+                cookie: cookieHeader,
+            };
 
-            const headers = new Headers(init?.headers);
-            headers.set("Cookie", cookieHeader);
-            console.log("Using custom fetch with cookies:", {headers, url});
-            return fetch(url, {
-                ...init,
+            console.log("Using custom axios with cookies:", {headers, url: requestUrl});
+
+            const response = await axios({
+                url: requestUrl,
+                method: (init?.method as any) || 'GET',
                 headers,
-                credentials: "include",
+                data: init?.body,
+                withCredentials: true,
+                validateStatus: () => true, // Don't throw on HTTP error status codes
             });
+
+            // Convert axios response to fetch-like Response object
+            return new Response(
+                typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+                {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: new Headers(response.headers as any),
+                }
+            );
         }
         : undefined;
 
-    // Create A2A provider with custom fetch implementation
+    // Create A2A provider with custom axios implementation
     const a2aProvider = createA2a({
-        ...(fetchWithCookies && {fetchImpl: fetchWithCookies}),
+        ...(axiosWithCookies && {fetchImpl: axiosWithCookies}),
     });
 
     // TODO: use environment variable for base URL
