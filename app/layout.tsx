@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 
 import { AuthProvider } from "./auth/hooks";
 import { getSession } from "./auth/session";
+import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -32,12 +33,19 @@ export default async function RootLayout({
   return (
     <html lang="en" className={cn(inter.variable)}>
       <body>
-        <AuthProvider session={session}>
-          {children}
-          <Toaster position="bottom-right" />
-          <Analytics />
-          <SpeedInsights />
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider session={session}>
+            {children}
+            <Toaster position="bottom-right" />
+            <Analytics />
+            <SpeedInsights />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
