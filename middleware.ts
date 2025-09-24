@@ -1,6 +1,6 @@
 import {type NextRequest, NextResponse} from "next/server";
 import {isForgeRockAuthEnabled, FULLY_QUALIFIED_DOMAIN} from "./lib/constants";
-import {createBasepathUrl} from "./lib/utils";
+import {createBasepathUrl, createBasepathPath, getBasePath} from "./lib/utils";
 import {getDefaultSession} from "./app/auth/session-types";
 
 export async function middleware(request: NextRequest) {
@@ -15,7 +15,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // Allow access to authentication routes
-    if (pathname.startsWith("/api/auth")) {
+    const authPath = createBasepathPath("/api/auth");
+    if (pathname.startsWith(authPath)) {
         return NextResponse.next();
     }
 
@@ -47,7 +48,9 @@ export async function middleware(request: NextRequest) {
     // If the user is not authenticated, redirect to the login page
     if (!isAuthenticated) {
         // Don't use login or auth pages as callback URLs to prevent infinite redirects
-        const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/api/auth');
+        const loginPath = createBasepathPath('/login');
+        const authApiPath = createBasepathPath('/api/auth');
+        const isAuthPage = pathname.startsWith(loginPath) || pathname.startsWith(authApiPath);
         const callbackPath = isAuthPage ? '/' : pathname;
 
         // Construct full URL using FULLY_QUALIFIED_DOMAIN for ForgeRock
@@ -74,8 +77,11 @@ export const config = {
     runtime: 'nodejs',
     matcher: [
         "/",
+        "/rx/",
         "/chat/:id",
+        "/rx/chat/:id",
         "/api/:path*",
+        "/rx/api/:path*",
 
         /*
          * Match all request paths except for the ones starting with:

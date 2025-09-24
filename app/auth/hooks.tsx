@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { SessionData } from "./session-types";
+import { SessionData, getLoginUrl, getLogoutUrl } from "./session-types";
+import { createBasepathPath } from "@/lib/utils";
 
 // Define the authentication context type
 type AuthContextType = {
@@ -36,14 +37,13 @@ export function AuthProvider({ children, session: initialSession }: AuthProvider
 
   // Function to sign in
   const signIn = (callbackUrl: string = "/") => {
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    router.push(`/api/auth/signin?callbackUrl=${encodedCallbackUrl}`);
+    router.push(getLoginUrl(callbackUrl));
   };
 
   // Function to sign out
   const signOut = (callbackUrl: string = "/") => {
     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    router.push(`/api/auth/signout?callbackUrl=${encodedCallbackUrl}`);
+    router.push(`${getLogoutUrl()}?callbackUrl=${encodedCallbackUrl}`);
   };
 
   // Update the session status when the session changes
@@ -66,7 +66,7 @@ export function useAuth() {
 // Function to get the session on the server side
 export async function getServerSession(): Promise<SessionData | null> {
   try {
-    const response = await fetch("/api/auth/session", {
+    const response = await fetch(createBasepathPath("/api/auth/session"), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -24,7 +24,7 @@ import {chatModels} from "@/lib/ai/models";
 import {myProvider} from "@/lib/ai/providers";
 import type {Attachment, ChatMessage} from "@/lib/types";
 import type {AppUsage} from "@/lib/usage";
-import {cn} from "@/lib/utils";
+import {cn, createBasepathPath} from "@/lib/utils";
 import {Context} from "./elements/context";
 import {
     PromptInput,
@@ -130,7 +130,7 @@ function PureMultimodalInput({
     const [uploadQueue, setUploadQueue] = useState<string[]>([]);
 
     const submitForm = useCallback(() => {
-        window.history.replaceState({}, "", `/chat/${chatId}`);
+        window.history.replaceState({}, "", createBasepathPath(`/chat/${chatId}`));
 
         sendMessage({
             role: "user",
@@ -173,7 +173,7 @@ function PureMultimodalInput({
         formData.append("file", file);
 
         try {
-            const response = await fetch("/api/files/upload", {
+            const response = await fetch(createBasepathPath("/api/files/upload"), {
                 method: "POST",
                 body: formData,
             });
